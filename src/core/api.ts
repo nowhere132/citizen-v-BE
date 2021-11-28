@@ -1,5 +1,6 @@
 import langs from '../constants/langs';
 import { expressHandler, defaultResponse, defaultError } from '../interfaces/expressHandler';
+import provinceApis from './province.api';
 import Logger from '../libs/logger';
 
 const logger = Logger.create('api.ts');
@@ -19,6 +20,7 @@ const apis: expressHandler[] = [
       }
     },
   },
+  ...provinceApis,
 ];
 
 export default apis;
