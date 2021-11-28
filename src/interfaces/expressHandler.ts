@@ -10,7 +10,7 @@ export interface expressHandler {
   action: (req: Request, res: Response, next: NextFunction) => any;
 }
 
-export function nextpayResponse(
+export function defaultResponse(
   res: Response,
   message?: String,
   code?: String,
@@ -27,7 +27,7 @@ export function nextpayResponse(
   return <Response>res.status(statusCode).json(response);
 }
 
-export function nextpayError(
+export function defaultError(
   res: Response,
   message?: String,
   code?: String,
