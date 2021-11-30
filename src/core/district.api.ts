@@ -1,14 +1,14 @@
 import langs from '../constants/langs';
 import { defaultError, expressHandler, pagingResponse } from '../interfaces/expressHandler';
-import * as provinceRepo from '../repositories/province.repo';
+import * as districtRepo from '../repositories/district.repo';
 import Logger from '../libs/logger';
 
-const logger = Logger.create('province.ts');
+const logger = Logger.create('district.ts');
 const apis: expressHandler[] = [
-  // @done GetProvincesByCondition
+  // @done GetDistrictsByCondition
   {
     params: {},
-    path: '/province',
+    path: '/district',
     method: 'GET',
     action: async (req, res) => {
       try {
@@ -21,17 +21,17 @@ const apis: expressHandler[] = [
         const skip: number = (actualPage - 1) * numOfRecords;
         const defaultSort = { code: 1 };
 
-        const provincesPromise = provinceRepo.getProvincesByCondition(
+        const districtsPromise = districtRepo.getDistrictsByCondition(
           filter,
           numOfRecords,
           skip,
           defaultSort,
         );
-        const totalPromise = provinceRepo.countProvincesByFilters(filter);
+        const totalPromise = districtRepo.countDistrictsByFilters(filter);
 
-        const [provinces, total] = await Promise.all([provincesPromise, totalPromise]);
+        const [districts, total] = await Promise.all([districtsPromise, totalPromise]);
 
-        return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, provinces, 200);
+        return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, districts, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
