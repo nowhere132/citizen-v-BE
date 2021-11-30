@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import { FourDigitCode, TwoDigitCode } from '../interfaces/common';
 
 export interface District {
-  code: string;
+  code: FourDigitCode;
   name: string;
-  provinceCode: string;
+  provinceCode: TwoDigitCode;
   provinceName: string;
 }
 

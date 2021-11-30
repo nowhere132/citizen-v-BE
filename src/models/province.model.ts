@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+import { TwoDigitCode } from '../interfaces/common';
 
 export interface Province {
-  code: string;
+  code: TwoDigitCode;
   name: string;
 }
 
