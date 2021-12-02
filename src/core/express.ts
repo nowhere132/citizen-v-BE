@@ -47,7 +47,7 @@ async function ExpressServer() {
     }
   });
   // start server
-  const port = process.env.HTTP_PORT || process.env.PORT || 80;
+  const port = process.env.HTTP_PORT || process.env.PORT || 8080;
   app.listen(port, () => {
     logger.info('SERVER STARTED AT', port);
   });
