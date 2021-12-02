@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "declaration": true,
     "pretty": true,
-    "strictNullChecks": true,
+    // "strictNullChecks": true,
     "typeRoots": ["./node_modules/@types"],
     "sourceMap": true,
     "target": "es6",
