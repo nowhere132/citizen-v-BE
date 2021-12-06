@@ -16,14 +16,20 @@ async function ExpressServer() {
   // setup apis
   apis.forEach(async (api: expressHandler) => {
     const funcs: RequestHandler[] = [];
-    // setup custom middleware
-    if (api.customMiddleWares && api.customMiddleWares.length > 0) {
-      funcs.push(...api.customMiddleWares);
+    // setup pre-validator middlewares
+    if (api.preValidatorMiddlewares && api.preValidatorMiddlewares.length > 0) {
+      funcs.push(...api.preValidatorMiddlewares);
     }
     // setup validator
     if (api.params) funcs.push(validator);
+    // setup custom middlewares
+    if (api.customMiddleWares && api.customMiddleWares.length > 0) {
+      funcs.push(...api.customMiddleWares);
+    }
+
     // add handler
     funcs.push(api.action);
+
     // register api
     switch (api.method.toLowerCase()) {
       case 'get':
