@@ -18,8 +18,8 @@ const apis: expressHandler[] = [
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
         // TODO: refactor later
         const hardcodeUsers: User[] = [
-          { username: 'manhthd', password: '1' },
-          { username: 'huytn', password: '2' },
+          { username: 'manhthd', password: '1', level: 1 },
+          { username: 'huytn', password: '2', level: 2 },
         ];
 
         // STEP1: normalize req body

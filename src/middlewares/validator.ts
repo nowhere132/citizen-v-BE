@@ -23,7 +23,6 @@ function resolveSchema(path: string, method: string) {
 
 const v = defaultValidator();
 
-// eslint-disable-next-line consistent-return
 function schemaCheck(req: Request, res: Response, next: NextFunction) {
   try {
     const check = v.compile(resolveSchema(req.originalUrl, req.method));
@@ -36,10 +35,27 @@ function schemaCheck(req: Request, res: Response, next: NextFunction) {
         data: match,
       });
     }
-    next();
+    return next();
   } catch (e) {
     logger.error('request validate error', e);
-    next();
+    return next();
   }
 }
+
+export const prepareRegex = () => {
+  apis.forEach((api: expressHandlerExt) => {
+    const fullPath = api.path.split('/');
+    fullPath.shift();
+    let regexText = '\\b';
+    fullPath.forEach((i: string) => {
+      if (i[0] === ':') { regexText += '\\w*\\/'; } else { regexText += `${i}\\/`; }
+    });
+    regexText = regexText.slice(0, -2);
+    regexText += '\\b(\\/)?$';
+    // eslint-disable-next-line no-param-reassign
+    api.regexText = regexText;
+    logger.info(regexText);
+  });
+};
+
 export default schemaCheck;

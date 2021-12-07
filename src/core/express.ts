@@ -4,7 +4,7 @@ import Logger from '../libs/logger';
 import apis from './api';
 import middlewares from '../middlewares/middleFunctions';
 import { expressHandler } from '../interfaces/expressHandler';
-import validator from '../middlewares/validator';
+import validator, { prepareRegex } from '../middlewares/validator';
 
 async function ExpressServer() {
   const app = express();
@@ -13,6 +13,10 @@ async function ExpressServer() {
   app.use(cors());
   // setup middleware
   app.use(...middlewares);
+
+  // prepare regex for apis
+  prepareRegex();
+
   // setup apis
   apis.forEach(async (api: expressHandler) => {
     const funcs: RequestHandler[] = [];

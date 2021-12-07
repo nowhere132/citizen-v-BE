@@ -4,6 +4,7 @@ export interface User {
   _id?: string;
   username: string;
   password: string;
+  level: 1 | 2 | 3 | 4 | 5;
   code?: string;
 }
 
