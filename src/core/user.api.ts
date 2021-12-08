@@ -6,6 +6,7 @@ import Logger from '../libs/logger';
 const logger = Logger.create('test-api.ts');
 
 const apis: expressHandler[] = [
+  // @done, UserLogin
   {
     params: {
       username: 'string',
@@ -37,7 +38,7 @@ const apis: expressHandler[] = [
             400,
           );
         }
-        return defaultResponse(res, '', langs.SUCCESS, { token: 'hardcoded', user: rawUser }, 200);
+        return defaultResponse(res, '', langs.SUCCESS, { token: 'hardcoded', user }, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
