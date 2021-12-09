@@ -2,6 +2,7 @@ import langs from '../constants/langs';
 import { expressHandler, defaultResponse, defaultError } from '../interfaces/expressHandler';
 import provinceApis from './province.api';
 import districtApis from './district.api';
+import wardApis from './ward.api';
 import testApis from './testApi';
 import userApis from './user.api';
 import Logger from '../libs/logger';
@@ -25,6 +26,7 @@ const apis: expressHandler[] = [
   },
   ...provinceApis,
   ...districtApis,
+  ...wardApis,
   ...userApis,
   ...testApis, // for nhathuy
 ];
