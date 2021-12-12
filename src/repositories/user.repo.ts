@@ -12,6 +12,8 @@ const getUsersByCondition = async (pipe: object, limit: number, skip: number, so
 
 const getUserById = async (id: string) => userModel.findById(id).lean();
 
+const getUserByUsername = async (username: string) => userModel.findOne({ username }).lean();
+
 const countUsersByFilters = async (pipe: object): Promise<number> => userModel.count(pipe);
 
 const deleteUserById = async (id: string) => userModel.findByIdAndDelete(id);
@@ -20,6 +22,7 @@ export {
   insertUser,
   getUsersByCondition,
   getUserById,
+  getUserByUsername,
   countUsersByFilters,
   deleteUserById,
 };

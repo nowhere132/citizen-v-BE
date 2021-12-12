@@ -1,8 +1,8 @@
 import { isValidObjectId } from 'mongoose';
+import { validateUserRegister } from '../middlewares/userMiddlewares';
 import { validateTypes } from '../libs/defaultValidator';
 import { generateToken } from '../utils/tokenUtils';
 import { tokenExpireTimeInMs } from '../constants/configValues';
-import { validateCodeAndLevel } from '../middlewares/userMiddlewares';
 import { User, UserLoginDTO } from '../models/user.model';
 import langs from '../constants/langs';
 import { defaultError, defaultResponse, expressHandler } from '../interfaces/expressHandler';
@@ -17,12 +17,15 @@ const apis: expressHandler[] = [
     params: {
       username: validateTypes.USERNAME,
       password: validateTypes.PASSWORD,
-      level: 'number|min:1|max:5',
-      code: 'string|optional',
+      name: validateTypes.NAME,
+      phoneNumber: validateTypes.PHONE_NO,
+      level: 'number|min:2|max:5',
+      resourceCode: 'string',
+      resourceName: 'string',
     },
     path: '/user/register',
     method: 'POST',
-    customMiddleWares: [validateCodeAndLevel],
+    customMiddleWares: [validateUserRegister],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
@@ -35,6 +38,9 @@ const apis: expressHandler[] = [
 
         return defaultResponse(res, '', langs.CREATED, user, 201);
       } catch (err) {
+        if (err.code === 11000) {
+          return defaultError(res, 'Username đã tồn tại', langs.BAD_REQUEST, null, 400);
+        }
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
       }
@@ -56,12 +62,10 @@ const apis: expressHandler[] = [
         const rawUser: UserLoginDTO = req.body as UserLoginDTO;
 
         // STEP2: find in DB
-        const condition = { username: rawUser.username };
-        const users = await userRepo.getUsersByCondition(condition, 1, 0, { _id: 1 });
-        if (users.length === 0) {
+        const user: User | null = await userRepo.getUserByUsername(rawUser.username);
+        if (!user) {
           return defaultError(res, 'Không tồn tại tên tài khoản', langs.BAD_REQUEST, null, 400);
         }
-        const user = users[0];
         if (user.password !== rawUser.password) {
           return defaultError(res, 'Mật khẩu không đúng', langs.BAD_REQUEST, null, 400);
         }
@@ -69,7 +73,7 @@ const apis: expressHandler[] = [
         // STEP3: generate token
         const token = generateToken(user, tokenExpireTimeInMs);
 
-        return defaultResponse(res, '', langs.SUCCESS, { token, user: users[0] }, 200);
+        return defaultResponse(res, '', langs.SUCCESS, { token, user }, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);

@@ -1,4 +1,5 @@
 /* eslint-disable implicit-arrow-linebreak */
+import { SixDigitCode } from '../interfaces/common';
 import wardModel from '../models/ward.model';
 
 const getWardsByCondition = async (pipe: object, limit: number, skip: number, sort: object) =>
@@ -7,10 +8,14 @@ const getWardsByCondition = async (pipe: object, limit: number, skip: number, so
 
 const getWardById = async (id: string) => wardModel.findById(id).lean();
 
+const getWardByCode = async (code: SixDigitCode) =>
+  wardModel.findOne({ code }).lean();
+
 const countWardsByFilters = async (pipe: object): Promise<number> => wardModel.count(pipe);
 
 export {
   getWardsByCondition,
   getWardById,
+  getWardByCode,
   countWardsByFilters,
 };

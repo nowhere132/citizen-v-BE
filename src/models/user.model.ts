@@ -12,15 +12,20 @@ export interface User {
   _id?: string;
   username: string;
   password: string;
+  name: string;
   level: 1 | 2 | 3 | 4 | 5;
-  code?: TwoDigitCode | FourDigitCode | SixDigitCode | EightDigitCode;
+  resourceCode?: TwoDigitCode | FourDigitCode | SixDigitCode | EightDigitCode;
+  resourceName?: string;
 }
 
 const userSchema = new mongoose.Schema<User>(
   {
-    code: String,
     username: String,
     password: String,
+    name: String,
+    level: Number,
+    resourceCode: String,
+    resourceName: String,
   },
   {
     collection: 'users',

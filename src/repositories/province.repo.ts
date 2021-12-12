@@ -1,4 +1,5 @@
 /* eslint-disable implicit-arrow-linebreak */
+import { TwoDigitCode } from '../interfaces/common';
 import provinceModel from '../models/province.model';
 
 const getProvincesByCondition = async (pipe: object, limit: number, skip: number, sort: object) =>
@@ -7,10 +8,14 @@ const getProvincesByCondition = async (pipe: object, limit: number, skip: number
 
 const getProvinceById = async (id: string) => provinceModel.findById(id).lean();
 
+const getProvinceByCode = async (code: TwoDigitCode) =>
+  provinceModel.findOne({ code }).lean();
+
 const countProvincesByFilters = async (pipe: object): Promise<number> => provinceModel.count(pipe);
 
 export {
   getProvincesByCondition,
   getProvinceById,
+  getProvinceByCode,
   countProvincesByFilters,
 };
