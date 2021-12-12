@@ -19,18 +19,45 @@ const defaultValidator = () => {
     },
   });
 
-  // YYYY-MM-DD hh:mm:ss
-  v.alias('CUSTOM_DATETIME_1', {
+  // NAME
+  v.alias('NAME', {
     type: 'string',
-    custom: (value: any) => {
-      const formattedValue = `${value.replace(' ', 'T')}Z`;
-      const isDate = !Number.isNaN(Date.parse(formattedValue));
-      if (isDate) return true;
-      return [{ type: 'custom_date', expected: 'YYYY-MM-DD hh:mm:ss', actual: value }];
+    min: 1,
+    max: 255,
+    pattern: '^(?!.*<[^>]+>).*',
+    messages: {
+      stringPattern: "The '{field}' field must not include HTML tag.",
+    },
+  });
+  // USERNAME
+  v.alias('USERNAME', {
+    type: 'string',
+    min: 2,
+    max: 50,
+    pattern: '^[A-Za-z0-9_.]*$',
+    messages: {
+      stringPattern: "The '{field}' field must not include HTML tag.",
+    },
+  });
+  // PASSWORD
+  v.alias('PASSWORD', {
+    type: 'string',
+    min: 6,
+    max: 20,
+    pattern: '^(?!.*<[^>]+>).*',
+    messages: {
+      stringPattern: "The '{field}' field must not include HTML tag.",
     },
   });
 
   return v;
+};
+
+export const validateTypes = {
+  MONGO_OBJECT_ID: 'MONGO_OBJECT_ID',
+  USERNAME: 'USERNAME',
+  NAME: 'NAME',
+  PASSWORD: 'PASSWORD',
 };
 
 export default defaultValidator;

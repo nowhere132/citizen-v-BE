@@ -3,3 +3,5 @@ export type TwoDigitCode = `${Digit}${Digit}`;
 export type FourDigitCode = `${TwoDigitCode}${TwoDigitCode}`;
 export type SixDigitCode = string;
 export type EightDigitCode = string;
+
+export type EpochTimeInMs = number;

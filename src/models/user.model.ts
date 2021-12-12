@@ -1,11 +1,19 @@
 import mongoose from 'mongoose';
+import {
+  EightDigitCode, FourDigitCode, SixDigitCode, TwoDigitCode,
+} from '../interfaces/common';
+
+export interface UserLoginDTO {
+  username: string;
+  password: string;
+}
 
 export interface User {
   _id?: string;
   username: string;
   password: string;
   level: 1 | 2 | 3 | 4 | 5;
-  code?: string;
+  code?: TwoDigitCode | FourDigitCode | SixDigitCode | EightDigitCode;
 }
 
 const userSchema = new mongoose.Schema<User>(
