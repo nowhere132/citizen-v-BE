@@ -37,7 +37,7 @@ const apis: expressHandler[] = [
           skip,
           defaultSort,
         );
-        const totalPromise = wardRepo.countWardsByFilters(filter);
+        const totalPromise = wardRepo.countWardsByFilters(customedFilter);
 
         const [wards, total] = await Promise.all([wardsPromise, totalPromise]);
 

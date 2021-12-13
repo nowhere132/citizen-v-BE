@@ -37,7 +37,7 @@ const apis: expressHandler[] = [
           skip,
           defaultSort,
         );
-        const totalPromise = quarterRepo.countQuartersByFilters(filter);
+        const totalPromise = quarterRepo.countQuartersByFilters(customedFilter);
 
         const [quarters, total] = await Promise.all([quartersPromise, totalPromise]);
 

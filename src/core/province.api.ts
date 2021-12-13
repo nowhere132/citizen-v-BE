@@ -37,7 +37,7 @@ const apis: expressHandler[] = [
           skip,
           defaultSort,
         );
-        const totalPromise = provinceRepo.countProvincesByFilters(filter);
+        const totalPromise = provinceRepo.countProvincesByFilters(customedFilter);
 
         const [provinces, total] = await Promise.all([provincesPromise, totalPromise]);
 

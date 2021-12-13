@@ -95,24 +95,33 @@ const apis: expressHandler[] = [
   {
     path: '/user',
     method: 'GET',
+    customMiddleWares: [
+      // TODO: turn on later
+      // verifyAccessToken,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
 
         const { page, perPage, ...filter } = req.query;
 
+        // STEP1: extract paging informations
         const actualPage = +(page || 1);
         const numOfRecords = +(perPage || 10);
         const skip: number = (actualPage - 1) * numOfRecords;
         const defaultSort = { code: 1 };
 
+        // STEP2: custom filter
+        const customedFilter = { ...filter };
+        // TODO: add logic resourceCode here
+
         const usersPromise = userRepo.getUsersByCondition(
-          filter,
+          customedFilter,
           numOfRecords,
           skip,
           defaultSort,
         );
-        const totalPromise = userRepo.countUsersByFilters(filter);
+        const totalPromise = userRepo.countUsersByFilters(customedFilter);
 
         const [users, total] = await Promise.all([usersPromise, totalPromise]);
 

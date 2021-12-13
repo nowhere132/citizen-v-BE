@@ -37,7 +37,7 @@ const apis: expressHandler[] = [
           skip,
           defaultSort,
         );
-        const totalPromise = districtRepo.countDistrictsByFilters(filter);
+        const totalPromise = districtRepo.countDistrictsByFilters(customedFilter);
 
         const [districts, total] = await Promise.all([districtsPromise, totalPromise]);
 
