@@ -1,12 +1,13 @@
-import { quarterGeneratingJob, removeJobDetailsInWard } from './resourceJobs';
+import { createUserA1, quarterGeneratingJob, removeJobDetailsInWard } from './resourceJobs';
 
 const jobs = async () => {
   const choice = {
     GENERATE_QUARTERS: quarterGeneratingJob,
     REMOVE_JOB_DETAILS: removeJobDetailsInWard,
+    CREATE_USER_A1: createUserA1,
   };
 
-  await choice.GENERATE_QUARTERS();
+  await choice.CREATE_USER_A1();
 };
 
 export default jobs;

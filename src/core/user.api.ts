@@ -15,6 +15,7 @@ const apis: expressHandler[] = [
   // @done, UserRegister
   {
     params: {
+      $$strict: true,
       username: validateTypes.USERNAME,
       password: validateTypes.PASSWORD,
       name: validateTypes.NAME,
@@ -22,6 +23,7 @@ const apis: expressHandler[] = [
       level: 'number|min:2|max:5',
       resourceCode: 'string',
       resourceName: 'string',
+      permissions: validateTypes.PERMISSION_BITS,
     },
     path: '/user/register',
     method: 'POST',

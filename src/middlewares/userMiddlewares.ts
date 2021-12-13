@@ -43,6 +43,10 @@ const validateUserRegister = async (req: Request, res: Response, next: NextFunct
       return defaultError(res, 'Level và Code không khớp.', langs.BAD_REQUEST, null, 400);
     }
 
+    if (rawUser.permissions[1] !== '1') {
+      return defaultError(res, 'User luôn có quyền Read', langs.BAD_REQUEST, null, 400);
+    }
+
     const [resourceExisting, resourceName] = await checkResourceExisting(
       rawUser.level,
       rawUser.resourceCode,

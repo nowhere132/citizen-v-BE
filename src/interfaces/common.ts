@@ -4,4 +4,7 @@ export type FourDigitCode = `${TwoDigitCode}${TwoDigitCode}`;
 export type SixDigitCode = string;
 export type EightDigitCode = string;
 
+export type BinaryDigit = '0' | '1';
+export type PermissionBits = `${BinaryDigit}${BinaryDigit}${BinaryDigit}${BinaryDigit}`;
+
 export type EpochTimeInMs = number;

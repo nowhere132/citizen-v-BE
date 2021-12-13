@@ -60,6 +60,17 @@ const defaultValidator = () => {
     },
   });
 
+  // > CUSTOM ALIASES
+  v.alias('PERMISSION_BITS', {
+    type: 'string',
+    length: 4,
+    pattern: '^[0-1]{4}$',
+    messages: {
+      string: "The '{field}' must follow permission bits format.",
+    },
+  });
+  // < CUSTOM ALIASES
+
   return v;
 };
 
@@ -69,6 +80,8 @@ export const validateTypes = {
   NAME: 'NAME',
   PASSWORD: 'PASSWORD',
   PHONE_NO: 'PHONE_NO',
+
+  PERMISSION_BITS: 'PERMISSION_BITS',
 };
 
 export default defaultValidator;

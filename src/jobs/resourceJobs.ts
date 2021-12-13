@@ -6,6 +6,7 @@ import { randomInt, randomUuid } from '../utils/common';
 import * as wardRepo from '../repositories/ward.repo';
 import * as quarterRepo from '../repositories/quarter.repo';
 import Logger from '../libs/logger';
+import userModel, { User } from '../models/user.model';
 
 const logger = Logger.create('resource-job.ts');
 
@@ -108,7 +109,30 @@ const removeJobDetailsInWard = async () => {
   }
 };
 
+// @done
+const createUserA1 = async () => {
+  try {
+    logger.info('----- removeJobDetailsInWard START -----');
+
+    const user: User = {
+      username: 'admin',
+      password: '123456',
+      name: 'Admin Of CitizenV',
+      phoneNumber: '0346743022',
+      level: 1,
+      permissions: '1111',
+    };
+    await userModel.findOneAndUpdate({ level: 1 }, user, { upsert: true });
+
+    logger.info('----- removeJobDetailsInWard FINISH -----');
+  } catch (err) {
+    logger.error('removeJobDetailsInWard err:', err.message);
+    setTimeout(createUserA1, 10 * 1000);
+  }
+};
+
 export {
   quarterGeneratingJob,
   removeJobDetailsInWard,
+  createUserA1,
 };
