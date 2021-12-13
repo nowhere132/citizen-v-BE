@@ -1,14 +1,14 @@
 import langs from '../constants/langs';
 import { defaultError, expressHandler, pagingResponse } from '../interfaces/expressHandler';
-import * as provinceRepo from '../repositories/province.repo';
+import * as quarterRepo from '../repositories/quarter.repo';
 import Logger from '../libs/logger';
 
-const logger = Logger.create('province.ts');
+const logger = Logger.create('district.ts');
 const apis: expressHandler[] = [
-  // @done GetProvincesByCondition
+  // @done GetQuartersByCondition
   {
     params: {},
-    path: '/province',
+    path: '/quarter',
     method: 'GET',
     action: async (req, res) => {
       try {
@@ -24,24 +24,24 @@ const apis: expressHandler[] = [
 
         // STEP2: custom filter
         const customedFilter = { ...filter };
-        const likeSearchFields = ['name'];
+        const likeSearchFields = ['name', 'wardName', 'districtName', 'provinceName'];
         likeSearchFields.forEach((field) => {
           if (field in filter) {
             customedFilter[field] = { $regex: `.*${filter[field]}.*`, $options: 'i' };
           }
         });
 
-        const provincesPromise = provinceRepo.getProvincesByCondition(
+        const quartersPromise = quarterRepo.getQuartersByCondition(
           customedFilter,
           numOfRecords,
           skip,
           defaultSort,
         );
-        const totalPromise = provinceRepo.countProvincesByFilters(filter);
+        const totalPromise = quarterRepo.countQuartersByFilters(filter);
 
-        const [provinces, total] = await Promise.all([provincesPromise, totalPromise]);
+        const [quarters, total] = await Promise.all([quartersPromise, totalPromise]);
 
-        return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, provinces, 200);
+        return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, quarters, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);

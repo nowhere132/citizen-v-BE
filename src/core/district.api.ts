@@ -16,13 +16,23 @@ const apis: expressHandler[] = [
 
         const { page, perPage, ...filter } = req.query;
 
+        // STEP1: extract paging informations
         const actualPage = +(page || 1);
         const numOfRecords = +(perPage || 10);
         const skip: number = (actualPage - 1) * numOfRecords;
         const defaultSort = { code: 1 };
 
+        // STEP2: custom filter
+        const customedFilter = { ...filter };
+        const likeSearchFields = ['name', 'provinceName'];
+        likeSearchFields.forEach((field) => {
+          if (field in filter) {
+            customedFilter[field] = { $regex: `.*${filter[field]}.*`, $options: 'i' };
+          }
+        });
+
         const districtsPromise = districtRepo.getDistrictsByCondition(
-          filter,
+          customedFilter,
           numOfRecords,
           skip,
           defaultSort,
