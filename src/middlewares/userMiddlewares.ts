@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../models/user.model';
+import { User, UserRegisterDTO } from '../models/user.model';
 import langs from '../constants/langs';
 import * as provinceRepo from '../repositories/province.repo';
 import * as districtRepo from '../repositories/district.repo';
@@ -38,10 +38,15 @@ const checkResourceExisting = async (level: number, code: string) => {
 
 const validateUserRegister = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const rawUser: User = req.body;
+    const rawUser: UserRegisterDTO = req.body;
     if ((rawUser.level - 1) * 2 !== rawUser.resourceCode.length) {
       return defaultError(res, 'Level và Code không khớp.', langs.BAD_REQUEST, null, 400);
     }
+    const userMakingRequest: User = (req as any).decodedToken;
+    if (userMakingRequest.level !== rawUser.level - 1) {
+      return defaultError(res, 'Không được phép tạo tài khoản với level này', langs.BAD_REQUEST, null, 400);
+    }
+    req.body.parentResourceCode = userMakingRequest.resourceCode || '';
 
     if (rawUser.permissions[1] !== '1') {
       return defaultError(res, 'User luôn có quyền Read', langs.BAD_REQUEST, null, 400);

@@ -112,7 +112,7 @@ const removeJobDetailsInWard = async () => {
 // @done
 const createUserA1 = async () => {
   try {
-    logger.info('----- removeJobDetailsInWard START -----');
+    logger.info('----- createUserA1 START -----');
 
     const user: User = {
       username: 'admin',
@@ -123,10 +123,11 @@ const createUserA1 = async () => {
       permissions: '1111',
     };
     await userModel.findOneAndUpdate({ level: 1 }, user, { upsert: true });
+    logger.info('$ createUserA1 MISSION COMPLETED');
 
-    logger.info('----- removeJobDetailsInWard FINISH -----');
+    logger.info('----- createUserA1 FINISH -----');
   } catch (err) {
-    logger.error('removeJobDetailsInWard err:', err.message);
+    logger.error('createUserA1 err:', err.message);
     setTimeout(createUserA1, 10 * 1000);
   }
 };

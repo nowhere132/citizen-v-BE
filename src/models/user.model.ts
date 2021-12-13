@@ -8,8 +8,7 @@ export interface UserLoginDTO {
   password: string;
 }
 
-export interface User {
-  _id?: string;
+export interface UserRegisterDTO {
   username: string;
   password: string;
   name: string;
@@ -20,6 +19,11 @@ export interface User {
   permissions: PermissionBits;
 }
 
+export interface User extends UserRegisterDTO {
+  _id?: string;
+  parentResourceCode?: TwoDigitCode | FourDigitCode | SixDigitCode;
+}
+
 const userSchema = new mongoose.Schema<User>(
   {
     username: String,
@@ -27,6 +31,7 @@ const userSchema = new mongoose.Schema<User>(
     name: String,
     phoneNumber: String,
     level: Number,
+    parentResourceCode: String,
     resourceCode: String,
     resourceName: String,
     permissions: String,

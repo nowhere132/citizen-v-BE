@@ -1,11 +1,17 @@
 import { isValidObjectId } from 'mongoose';
+import { verifyAccessToken } from '../middlewares/authenToken';
 import { validateUserRegister } from '../middlewares/userMiddlewares';
 import { validateTypes } from '../libs/defaultValidator';
 import { generateToken } from '../utils/tokenUtils';
 import { tokenExpireTimeInMs } from '../constants/configValues';
 import { User, UserLoginDTO } from '../models/user.model';
 import langs from '../constants/langs';
-import { defaultError, defaultResponse, expressHandler } from '../interfaces/expressHandler';
+import {
+  defaultError,
+  defaultResponse,
+  expressHandler,
+  pagingResponse,
+} from '../interfaces/expressHandler';
 import * as userRepo from '../repositories/user.repo';
 import Logger from '../libs/logger';
 
@@ -27,7 +33,10 @@ const apis: expressHandler[] = [
     },
     path: '/user/register',
     method: 'POST',
-    customMiddleWares: [validateUserRegister],
+    customMiddleWares: [
+      verifyAccessToken,
+      validateUserRegister,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
@@ -76,6 +85,38 @@ const apis: expressHandler[] = [
         const token = generateToken(user, tokenExpireTimeInMs);
 
         return defaultResponse(res, '', langs.SUCCESS, { token, user }, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
+  // @done, GetUsersPaging
+  {
+    path: '/user',
+    method: 'GET',
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        const { page, perPage, ...filter } = req.query;
+
+        const actualPage = +(page || 1);
+        const numOfRecords = +(perPage || 10);
+        const skip: number = (actualPage - 1) * numOfRecords;
+        const defaultSort = { code: 1 };
+
+        const usersPromise = userRepo.getUsersByCondition(
+          filter,
+          numOfRecords,
+          skip,
+          defaultSort,
+        );
+        const totalPromise = userRepo.countUsersByFilters(filter);
+
+        const [users, total] = await Promise.all([usersPromise, totalPromise]);
+
+        return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, users, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);

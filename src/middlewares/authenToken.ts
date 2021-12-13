@@ -12,12 +12,13 @@ const logger = Logger.create('authen-token.ts');
 const verifyAccessToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // STEP1: verify token
-    const token: string = req.headers['x-access-token'].toString();
+    const token: string = (req.headers['x-access-token'] || '').toString();
     if (!token) {
       return defaultError(res, 'Request không có token', langs.UNAUTHORIZED, null, 401);
     }
 
     const decodedToken = verifyToken(token) as TokenData;
+    (req as any).decodedToken = decodedToken;
 
     // STEP2: check author
     const restrictedApiPaths = ['/province', '/district', '/ward', '/quarter'];
