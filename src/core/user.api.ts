@@ -132,6 +132,60 @@ const apis: expressHandler[] = [
       }
     },
   },
+  // @done, GetUserById
+  {
+    path: '/user/:id',
+    method: 'GET',
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        // STEP1: normalize req param
+        const userId = req.params.id;
+        if (!isValidObjectId(userId)) {
+          return defaultError(res, 'id không phải ObjectId', langs.BAD_REQUEST, null, 400);
+        }
+
+        // STEP2: delete in DB
+        const user: User = await userRepo.getUserById(userId);
+
+        return defaultResponse(res, '', langs.SUCCESS, user, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
+  // @done, UpdateUserById
+  {
+    params: {
+      $$strict: true,
+      permissions: `${validateTypes.PERMISSION_BITS}|optional`,
+    },
+    path: '/user/:id',
+    method: 'PATCH',
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        // STEP1: normalize req param
+        const userId = req.params.id;
+        if (!isValidObjectId(userId)) {
+          return defaultError(res, 'id không phải ObjectId', langs.BAD_REQUEST, null, 400);
+        }
+
+        const updatingData = req.body;
+
+        // STEP2: delete in DB
+        const user: User = await userRepo.updateUserById(userId, updatingData);
+
+        return defaultResponse(res, '', langs.SUCCESS, user, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
   // @done, DeleteUserById
   {
     path: '/user/:id',
