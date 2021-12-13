@@ -2,7 +2,8 @@
 import { EightDigitCode } from '../interfaces/common';
 import quarterModel, { Quarter } from '../models/quarter.model';
 
-const insertQuarters = async (quarters: Quarter[]) => quarterModel.insertMany(quarters);
+const insertQuarters = async (quarters: Quarter[]) =>
+  quarterModel.insertMany(quarters, { ordered: false });
 
 const getQuartersByCondition = async (pipe: object, limit: number, skip: number, sort: object) =>
   quarterModel.find(pipe).limit(limit).skip(skip).sort(sort)

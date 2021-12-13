@@ -1,51 +1,114 @@
-import { randomUUID } from 'crypto';
+import { setTimeout } from 'timers';
+import { jobStatuses } from '../constants/configValues';
+import { Ward } from '../models/ward.model';
 import { Quarter } from '../models/quarter.model';
-import { randomInt } from '../utils/common';
+import { randomInt, randomUuid } from '../utils/common';
 import * as wardRepo from '../repositories/ward.repo';
 import * as quarterRepo from '../repositories/quarter.repo';
 import Logger from '../libs/logger';
 
 const logger = Logger.create('resource-job.ts');
 
-// @doing
+const quarterGenerating = (ward: Ward, id: number): Quarter => {
+  const suffixCode = id.toString().padStart(2, '0');
+  return {
+    code: ward.code + suffixCode,
+    name: `Tổ dân phố ${suffixCode}`,
+    wardCode: ward.code,
+    wardName: ward.name,
+    districtCode: ward.districtCode,
+    districtName: ward.districtName,
+    provinceCode: ward.provinceCode,
+    provinceName: ward.provinceName,
+  };
+};
+
+// @done
 const quarterGeneratingJob = async () => {
+  let nextTimeoutInMs = 7 * 1000;
   try {
     logger.info('----- quarterGeneratingJob START -----');
-    const condition = {
-      jobStatus: { $ne: 'DONE' },
+
+    const noJobBinding = {
+      $and: [
+        { jobStatus: { $ne: jobStatuses.PROCESSING } },
+        { jobStatus: { $ne: jobStatuses.DONE } },
+      ],
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const jobId: string = randomUUID();
-
-    const someWards = await wardRepo.getWardsByCondition(condition, 50, 0, { _id: 1 });
+    const someWards = await wardRepo.getWardsByCondition(noJobBinding, 50, 0, { _id: 1 });
+    // logger.info('someWards', someWards);
+    if (someWards.length === 0) {
+      logger.info('$ quarterGeneratingJob MISSION COMPLETED');
+      nextTimeoutInMs = 60 * 60 * 1000;
+    }
 
     const promises = someWards.map(async (ward) => {
-      const numOfQuarters = randomInt(3, 5);
-      const quarters: Quarter[] = [...Array(numOfQuarters)].map((_, i) => {
-        const suffixCode = i.toString().padStart(2, '0');
-        return {
-          code: ward.code + suffixCode,
-          name: `Tổ dân phố ${suffixCode}`,
-          wardCode: ward.code,
-          wardName: ward.name,
-          districtCode: ward.districtCode,
-          districtName: ward.districtName,
-          provinceCode: ward.provinceCode,
-          provinceName: ward.provinceName,
-        };
-      });
+      // STEP1: try to get the document
+      const jobId: string = randomUuid();
+      const updatingWard: any = await wardRepo.updateWardByFilter(
+        {
+          _id: ward._id,
+          ...noJobBinding,
+        },
+        {
+          jobId,
+          jobStatus: jobStatuses.PROCESSING,
+        },
+      );
+      // logger.info('$ updatingWard:', updatingWard);
+      if (updatingWard.jobId !== jobId) return;
 
-      return quarterRepo.insertQuarters(quarters);
+      // STEP2: if got, then start generating data
+      const numOfQuarters = randomInt(3, 5);
+      const quarters: Quarter[] = [...Array(numOfQuarters)]
+        .map((_, i) => quarterGenerating(ward, i));
+      await quarterRepo.insertQuarters(quarters);
+
+      await wardRepo.updateWardById(ward._id.toString(), { jobStatus: jobStatuses.DONE });
+
+      // logger.info('$ quarterGeneratingJob: ward', ward.code, '-->', ward.name, 'generated');
     });
 
-    await Promise.all(promises);
-
-    logger.info('----- quarterGeneratingJob FINISH -----');
+    const promiseResults = await Promise.allSettled(promises);
+    const failedCases = promiseResults.filter((pr) => pr.status === 'rejected');
+    if (failedCases.length > 0) {
+      logger.error(`$ quarterGeneratingJob, failed ${failedCases.length} cases`);
+    } else {
+      logger.info('----- quarterGeneratingJob FINISH -----');
+    }
   } catch (err) {
     logger.error('quarterGeneratingJob err:', err.message);
+  } finally {
+    setTimeout(quarterGeneratingJob, nextTimeoutInMs);
   }
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export { quarterGeneratingJob };
+// @done
+const removeJobDetailsInWard = async () => {
+  let nextTimeoutInMs = 1 * 1000;
+  try {
+    logger.info('----- removeJobDetailsInWard START -----');
+
+    const hasJobDetails = { jobStatus: { $exists: true } };
+    const ward = await wardRepo.updateWardByFilter(
+      hasJobDetails,
+      { $unset: { jobId: '', jobStatus: '' } },
+    );
+    if (!ward) {
+      logger.info('$ removeJobDetailsInWard MISSION COMPLETED');
+      nextTimeoutInMs = 60 * 60 * 1000;
+    }
+
+    logger.info('----- removeJobDetailsInWard FINISH -----');
+  } catch (err) {
+    logger.error('removeJobDetailsInWard err:', err.message);
+  } finally {
+    setTimeout(removeJobDetailsInWard, nextTimeoutInMs);
+  }
+};
+
+export {
+  quarterGeneratingJob,
+  removeJobDetailsInWard,
+};

@@ -13,9 +13,11 @@ import './libs/dotenv';
 import ExpressServer from './core/express';
 import mongodb from './libs/mongodb';
 import Logger from './libs/logger';
+import jobs from './jobs';
 
 const logger = Logger.create('index.ts');
 const run = (async () => {
   mongodb();
   ExpressServer();
+  jobs();
 })();
