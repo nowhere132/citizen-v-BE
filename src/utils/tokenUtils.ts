@@ -1,8 +1,8 @@
 /* eslint-disable implicit-arrow-linebreak */
 import * as jwt from 'jsonwebtoken';
-import { jwtSecretKey, tokenExpireTimeInMs } from '../constants/configValues';
+import { jwtSecretKey, tokenExpireTimeInSecond } from '../constants/configValues';
 
-const generateToken = (tokenData: any, expiresIn = tokenExpireTimeInMs): string =>
+const generateToken = (tokenData: any, expiresIn = tokenExpireTimeInSecond): string =>
   jwt.sign(tokenData, jwtSecretKey, { expiresIn });
 
 // CAN_RAISE_EXCEPTION

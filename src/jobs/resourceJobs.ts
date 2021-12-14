@@ -26,7 +26,7 @@ const quarterGenerating = (ward: Ward, id: number): Quarter => {
 
 // @done
 const quarterGeneratingJob = async () => {
-  let nextTimeoutInMs = 7 * 1000;
+  let nextTimeoutInMs = 2 * 1000;
   try {
     logger.info('----- quarterGeneratingJob START -----');
 

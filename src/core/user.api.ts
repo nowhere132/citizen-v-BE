@@ -1,9 +1,8 @@
 import { isValidObjectId } from 'mongoose';
 import { verifyAccessToken } from '../middlewares/authenToken';
-import { validateUserRegister } from '../middlewares/userMiddlewares';
+import { restrictByAccessToken, validateUserRegister } from '../middlewares/userMiddlewares';
 import { validateTypes } from '../libs/defaultValidator';
 import { generateToken } from '../utils/tokenUtils';
-import { tokenExpireTimeInMs } from '../constants/configValues';
 import { User, UserLoginDTO } from '../models/user.model';
 import langs from '../constants/langs';
 import {
@@ -82,7 +81,7 @@ const apis: expressHandler[] = [
         }
 
         // STEP3: generate token
-        const token = generateToken(user, tokenExpireTimeInMs);
+        const token = generateToken(user);
 
         return defaultResponse(res, '', langs.SUCCESS, { token, user }, 200);
       } catch (err) {
@@ -96,8 +95,8 @@ const apis: expressHandler[] = [
     path: '/user',
     method: 'GET',
     customMiddleWares: [
-      // TODO: turn on later
-      // verifyAccessToken,
+      verifyAccessToken,
+      restrictByAccessToken,
     ],
     action: async (req, res) => {
       try {
@@ -136,6 +135,10 @@ const apis: expressHandler[] = [
   {
     path: '/user/:id',
     method: 'GET',
+    customMiddleWares: [
+      verifyAccessToken,
+      restrictByAccessToken,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
@@ -162,6 +165,10 @@ const apis: expressHandler[] = [
       $$strict: true,
       permissions: `${validateTypes.PERMISSION_BITS}|optional`,
     },
+    customMiddleWares: [
+      verifyAccessToken,
+      restrictByAccessToken,
+    ],
     path: '/user/:id',
     method: 'PATCH',
     action: async (req, res) => {
@@ -190,6 +197,10 @@ const apis: expressHandler[] = [
   {
     path: '/user/:id',
     method: 'DELETE',
+    customMiddleWares: [
+      verifyAccessToken,
+      restrictByAccessToken,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);

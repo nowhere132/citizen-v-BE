@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { TokenData } from '../interfaces/token';
 import { User, UserRegisterDTO } from '../models/user.model';
 import langs from '../constants/langs';
 import * as provinceRepo from '../repositories/province.repo';
@@ -70,7 +71,35 @@ const validateUserRegister = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const restrictByAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const decodedToken = (req as any).decodedToken as TokenData;
+    if (req.method === 'GET') {
+      if (req.query.parentResourceCode
+          && req.query.parentResourceCode !== decodedToken.resourceCode) {
+        return defaultError(res, 'Không có quyền truy cập', langs.UNAUTHORIZED, null, 401);
+      }
+      req.query.parentResourceCode = decodedToken.resourceCode;
+    }
+    if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
+      // NOTE: currently do nothing. too flexible to handle
+    }
+    if (req.method === 'POST') {
+      if (req.body.parentResourceCode
+          && req.body.parentResourceCode !== decodedToken.resourceCode) {
+        return defaultError(res, 'Không có quyền truy cập', langs.UNAUTHORIZED, null, 401);
+      }
+      req.body.parentResourceCode = decodedToken.resourceCode;
+    }
+
+    return next();
+  } catch (err) {
+    logger.error('validateCodeAndLevel err:', err.message);
+    return next();
+  }
+};
+
 export {
-  // eslint-disable-next-line import/prefer-default-export
   validateUserRegister,
+  restrictByAccessToken,
 };
