@@ -193,6 +193,39 @@ const apis: expressHandler[] = [
       }
     },
   },
+  // @done, ChangeUserPassword
+  {
+    params: {
+      $$strict: true,
+      password: validateTypes.PASSWORD,
+    },
+    path: '/user/:id/change-password',
+    method: 'PATCH',
+    customMiddleWares: [
+      verifyAccessToken,
+    ],
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        // STEP1: normalize req param
+        const userId = req.params.id;
+        if (!isValidObjectId(userId)) {
+          return defaultError(res, 'id không phải ObjectId', langs.BAD_REQUEST, null, 400);
+        }
+
+        const { password } = req.body;
+
+        // STEP2: delete in DB
+        const user: User = await userRepo.updateUserById(userId, { password });
+
+        return defaultResponse(res, '', langs.SUCCESS, user, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
   // @done, DeleteUserById
   {
     path: '/user/:id',

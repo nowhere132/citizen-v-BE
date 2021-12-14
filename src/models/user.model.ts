@@ -8,9 +8,7 @@ export interface UserLoginDTO {
   password: string;
 }
 
-export interface UserRegisterDTO {
-  username: string;
-  password: string;
+export interface UserDetails {
   name: string;
   phoneNumber: string;
   level: 1 | 2 | 3 | 4 | 5;
@@ -18,6 +16,8 @@ export interface UserRegisterDTO {
   resourceName?: string;
   permissions: PermissionBits;
 }
+
+export interface UserRegisterDTO extends UserLoginDTO, UserDetails {}
 
 export interface User extends UserRegisterDTO {
   _id?: string;

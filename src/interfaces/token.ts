@@ -1,3 +1,6 @@
-import { User } from '../models/user.model';
+import { UserDetails } from '../models/user.model';
 
-export interface TokenData extends User {}
+export interface TokenData extends UserDetails {
+  _id: string;
+  username: string;
+}
