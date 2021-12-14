@@ -120,6 +120,7 @@ const createUserA1 = async () => {
       name: 'Admin Of CitizenV',
       phoneNumber: '0346743022',
       level: 1,
+      resourceCode: '',
       permissions: '1111',
     };
     await userModel.findOneAndUpdate({ level: 1 }, user, { upsert: true });
