@@ -14,7 +14,7 @@ import {
 import * as userRepo from '../repositories/user.repo';
 import Logger from '../libs/logger';
 
-const logger = Logger.create('test-api.ts');
+const logger = Logger.create('user.ts');
 
 const apis: expressHandler[] = [
   // @done, UserRegister

@@ -3,7 +3,7 @@ import { defaultError, expressHandler, pagingResponse } from '../interfaces/expr
 import * as wardRepo from '../repositories/ward.repo';
 import Logger from '../libs/logger';
 
-const logger = Logger.create('district.ts');
+const logger = Logger.create('ward.ts');
 const apis: expressHandler[] = [
   // @done GetWardsByCondition
   {
