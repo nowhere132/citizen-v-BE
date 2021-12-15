@@ -4,7 +4,7 @@ import {
 } from '../interfaces/common';
 
 export interface CreateFormDTO {
-  citizenId: mongoose.Types.ObjectId;
+  citizenId: string;
   fullname: string;
   dob: Date;
   gender: 'male' | 'female';
@@ -22,7 +22,7 @@ export interface Form extends CreateFormDTO {
 
 const formSchema = new mongoose.Schema<Form>(
   {
-    citizenId: mongoose.Types.ObjectId,
+    citizenId: String,
     fullname: String,
     dob: Date,
     gender: String,

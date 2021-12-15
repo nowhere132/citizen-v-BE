@@ -1,7 +1,6 @@
 import { restrictFormByAccessToken } from '../middlewares/formMiddlewares';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
-import { validateTypes } from '../libs/defaultValidator';
 import langs from '../constants/langs';
 import { Form } from '../models/form.model';
 import {
@@ -20,7 +19,7 @@ const apis: expressHandler[] = [
   {
     params: {
       $$strict: true,
-      citizenId: validateTypes.MONGO_OBJECT_ID,
+      citizenId: 'string',
       fullname: 'string',
       dob: {
         type: 'date',
