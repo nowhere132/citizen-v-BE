@@ -1,4 +1,5 @@
 import { isValidObjectId } from 'mongoose';
+import { TokenData } from '../interfaces/token';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { restrictByAccessToken, validateUserRegister } from '../middlewares/userMiddlewares';
 import { validateTypes } from '../libs/defaultValidator';
@@ -214,9 +215,15 @@ const apis: expressHandler[] = [
           return defaultError(res, 'id không phải ObjectId', langs.BAD_REQUEST, null, 400);
         }
 
-        const { password } = req.body;
+        const oldUserInfo = await userRepo.getUserById(userId);
+        const userMakingRequest: TokenData = (req as any).decodedToken;
+        if (oldUserInfo.parentResourceCode !== userMakingRequest.resourceCode
+          && oldUserInfo.resourceCode !== userMakingRequest.resourceCode) {
+          return defaultError(res, 'Người đổi không phải cấp trên hoặc chính chủ', langs.UNAUTHORIZED, null, 401);
+        }
 
         // STEP2: delete in DB
+        const { password } = req.body;
         const user: User = await userRepo.updateUserById(userId, { password });
 
         return defaultResponse(res, '', langs.SUCCESS, user, 200);
