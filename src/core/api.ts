@@ -6,6 +6,7 @@ import wardApis from './ward.api';
 import quarterApis from './quarter.api';
 import formApis from './form.api';
 import userApis from './user.api';
+import monitorApis from './monitorApi';
 import Logger from '../libs/logger';
 
 const logger = Logger.create('api.ts');
@@ -31,6 +32,7 @@ const apis: expressHandler[] = [
   ...quarterApis,
   ...userApis,
   ...formApis,
+  ...monitorApis,
 ];
 
 export default apis;
