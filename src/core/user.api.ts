@@ -199,6 +199,7 @@ const apis: expressHandler[] = [
     params: {
       $$strict: true,
       password: validateTypes.PASSWORD,
+      oldPassword: `${validateTypes.PASSWORD}|optional`,
     },
     path: '/user/:id/change-password',
     method: 'PATCH',
@@ -217,13 +218,17 @@ const apis: expressHandler[] = [
 
         const oldUserInfo = await userRepo.getUserById(userId);
         const userMakingRequest: TokenData = (req as any).decodedToken;
-        if (oldUserInfo.parentResourceCode !== userMakingRequest.resourceCode
-          && oldUserInfo.resourceCode !== userMakingRequest.resourceCode) {
+        const requestedByParent = oldUserInfo.parentResourceCode === userMakingRequest.resourceCode;
+        const selfRequest = oldUserInfo.resourceCode === userMakingRequest.resourceCode;
+        if (!requestedByParent && !selfRequest) {
           return defaultError(res, 'Người đổi không phải cấp trên hoặc chính chủ', langs.UNAUTHORIZED, null, 401);
         }
 
         // STEP2: delete in DB
-        const { password } = req.body;
+        const { password, oldPassword } = req.body;
+        if (selfRequest && oldPassword !== oldUserInfo.password) {
+          return defaultError(res, 'Mật khẩu cũ không đúng.', langs.BAD_REQUEST, null, 400);
+        }
         const user: User = await userRepo.updateUserById(userId, { password });
 
         return defaultResponse(res, '', langs.SUCCESS, user, 200);

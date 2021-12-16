@@ -4,7 +4,6 @@ import provinceApis from './province.api';
 import districtApis from './district.api';
 import wardApis from './ward.api';
 import quarterApis from './quarter.api';
-import testApis from './testApi';
 import formApis from './form.api';
 import userApis from './user.api';
 import Logger from '../libs/logger';
@@ -32,7 +31,6 @@ const apis: expressHandler[] = [
   ...quarterApis,
   ...userApis,
   ...formApis,
-  ...testApis, // for nhathuy
 ];
 
 export default apis;
