@@ -1,5 +1,5 @@
 const jwtSecretKey = process.env.JWT_SECRET_KEY || 'web3306@manhthd#@.@#';
-const tokenExpireTimeInMs = +process.env.TOKEN_EXPIRE_TIME || 1 * 60 * 1000;
+const tokenExpireTimeInMs = +process.env.TOKEN_EXPIRE_TIME || 15 * 60 * 1000;
 const tokenExpireTimeInSecond = tokenExpireTimeInMs / 1000;
 
 const jobStatuses = {
