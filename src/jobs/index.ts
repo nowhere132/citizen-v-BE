@@ -3,7 +3,7 @@ import { createUserA1, quarterGeneratingJob, removeJobDetailsInWard } from './re
 const jobs = async () => {
   const choice = {
     GENERATE_QUARTERS: quarterGeneratingJob,
-    REMOVE_JOB_DETAILS: removeJobDetailsInWard,
+    REMOVE_JOB_DETAILS_IN_WARD: removeJobDetailsInWard,
     CREATE_USER_A1: createUserA1,
   };
 

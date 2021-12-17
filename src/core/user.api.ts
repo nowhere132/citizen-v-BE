@@ -238,6 +238,43 @@ const apis: expressHandler[] = [
       }
     },
   },
+  // @done, ChangeUserPermission
+  {
+    params: {
+      $$strict: true,
+      permissions: validateTypes.PERMISSION_BITS,
+    },
+    path: '/user/:id/permissions',
+    method: 'PATCH',
+    customMiddleWares: [
+      verifyAccessToken,
+    ],
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        // STEP1: normalize req param
+        const userId = req.params.id;
+        if (!isValidObjectId(userId)) {
+          return defaultError(res, 'id không phải ObjectId', langs.BAD_REQUEST, null, 400);
+        }
+
+        // STEP2: update in DB
+        const { permissions } = req.body;
+
+        const allowedPermissions = ['0100', '1111'];
+        if (!allowedPermissions.includes(permissions)) {
+          return defaultError(res, 'permission muốn cập nhật không tồn tại', langs.BAD_REQUEST, null, 400);
+        }
+        const user: User = await userRepo.updateUserById(userId, { permissions });
+
+        return defaultResponse(res, '', langs.SUCCESS, user, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
   // @done, DeleteUserById
   {
     path: '/user/:id',
