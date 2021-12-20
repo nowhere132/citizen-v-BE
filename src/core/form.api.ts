@@ -75,7 +75,14 @@ const apis: expressHandler[] = [
 
         // STEP2: custom filter
         const customedFilter = { ...filter };
-        // TODO: add logic resourceCode here
+        const groupSearchFields = ['provinceCode', 'districtCode', 'wardCode', 'quarterCode'];
+        groupSearchFields.forEach((field) => {
+          if (field in filter) {
+            const orgArray: string[] = filter[field].toString().split(',');
+            const regexArray = orgArray.map((v) => new RegExp(`^${v}`));
+            (customedFilter as any).resourceCode = { $in: regexArray };
+          }
+        });
 
         const formsPromise = formRepo.getFormsByCondition(
           customedFilter,
