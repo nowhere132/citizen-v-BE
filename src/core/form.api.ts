@@ -1,7 +1,7 @@
 import { isValidObjectId } from 'mongoose';
 import { updateDoneForms } from '../serviceAsync/surveyProcess';
 import { restrictByAccessToken } from '../middlewares/userMiddlewares';
-import { restrictFormByAccessToken } from '../middlewares/formMiddlewares';
+import { restrictFormByAccessToken, restrictFormByPermissions } from '../middlewares/formMiddlewares';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
 import langs from '../constants/langs';
@@ -39,7 +39,11 @@ const apis: expressHandler[] = [
     },
     path: '/form',
     method: 'POST',
-    customMiddleWares: [verifyAccessToken, restrictFormByAccessToken],
+    customMiddleWares: [
+      verifyAccessToken,
+      restrictFormByAccessToken,
+      restrictFormByPermissions,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
@@ -127,7 +131,11 @@ const apis: expressHandler[] = [
     },
     path: '/form/:id',
     method: 'PUT',
-    customMiddleWares: [verifyAccessToken],
+    customMiddleWares: [
+      verifyAccessToken,
+      restrictFormByAccessToken,
+      restrictFormByPermissions,
+    ],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
@@ -166,6 +174,7 @@ const apis: expressHandler[] = [
     customMiddleWares: [
       verifyAccessToken,
       restrictByAccessToken,
+      restrictFormByPermissions,
     ],
     action: async (req, res) => {
       try {

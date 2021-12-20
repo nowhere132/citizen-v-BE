@@ -10,9 +10,9 @@ const getUsersByCondition = async (pipe: object, limit: number, skip: number, so
   userModel.find(pipe).limit(limit).skip(skip).sort(sort)
     .lean();
 
-const getUserById = async (id: string) => userModel.findById(id).lean();
+const getUsersByFilter = async (pipe: object) => userModel.findOne(pipe).lean();
 
-const getUserByUsername = async (username: string) => userModel.findOne({ username }).lean();
+const getUserById = async (id: string) => userModel.findById(id).lean();
 
 const countUsersByFilters = async (pipe: object): Promise<number> => userModel.count(pipe);
 
@@ -24,8 +24,8 @@ const deleteUserById = async (id: string) => userModel.findByIdAndDelete(id);
 export {
   insertUser,
   getUsersByCondition,
+  getUsersByFilter,
   getUserById,
-  getUserByUsername,
   countUsersByFilters,
   updateUserById,
   deleteUserById,

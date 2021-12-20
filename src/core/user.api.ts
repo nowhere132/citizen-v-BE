@@ -73,7 +73,7 @@ const apis: expressHandler[] = [
         const rawUser: UserLoginDTO = req.body as UserLoginDTO;
 
         // STEP2: find in DB
-        const user: User | null = await userRepo.getUserByUsername(rawUser.username);
+        const user: User | null = await userRepo.getUsersByFilter({ username: rawUser.username });
         if (!user) {
           return defaultError(res, 'Không tồn tại tên tài khoản', langs.BAD_REQUEST, null, 400);
         }
