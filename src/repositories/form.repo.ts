@@ -14,8 +14,12 @@ const getFormById = async (id: string) => formModel.findById(id).lean();
 
 const countFormsByFilters = async (pipe: object): Promise<number> => formModel.count(pipe);
 
-const updateFormById = async (id: string, updatingData: object): Promise<Form> =>
-  formModel.findByIdAndUpdate(id, updatingData, { returnOriginal: false }).lean();
+const updateFormById = async (
+  id: string,
+  updatingData: object,
+  opts: object = { returnOriginal: false },
+): Promise<Form> =>
+  formModel.findByIdAndUpdate(id, updatingData, opts).lean();
 
 const deleteFormById = async (id: string) => formModel.findByIdAndDelete(id);
 

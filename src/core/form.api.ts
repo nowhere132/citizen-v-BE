@@ -1,4 +1,5 @@
 import { isValidObjectId } from 'mongoose';
+import { updateDoneForms } from '../serviceAsync/surveyProcess';
 import { restrictByAccessToken } from '../middlewares/userMiddlewares';
 import { restrictFormByAccessToken } from '../middlewares/formMiddlewares';
 import { verifyAccessToken } from '../middlewares/authenToken';
@@ -34,7 +35,7 @@ const apis: expressHandler[] = [
       religion: 'string',
       levelOfEducation: 'string',
       job: 'string',
-      resourceCode: 'string',
+      resourceCode: 'string|min:8|max:8',
     },
     path: '/form',
     method: 'POST',
@@ -121,7 +122,7 @@ const apis: expressHandler[] = [
       religion: 'string',
       levelOfEducation: 'string',
       job: 'string',
-      resourceCode: 'string',
+      resourceCode: 'string|min:8|max:8',
       status: _enum(['PENDING', 'DONE']),
     },
     path: '/form/:id',
@@ -139,7 +140,17 @@ const apis: expressHandler[] = [
 
         // STEP2: update in DB
         const rawForm: Form = req.body;
+        const oldForm: Form | null = await formRepo.getFormById(formId);
+        if (!oldForm) {
+          return defaultError(res, 'Không tồn tại phiếu khảo sát này.', langs.BAD_REQUEST, null, 400);
+        }
         const form: Form = await formRepo.updateFormById(formId, rawForm);
+
+        // STEP3: create event
+        if (oldForm.status !== form.status) {
+          const diff = oldForm.status === 'PENDING' ? 1 : -1;
+          updateDoneForms(form.resourceCode, diff);
+        }
 
         return defaultResponse(res, '', langs.SUCCESS, form, 200);
       } catch (err) {
