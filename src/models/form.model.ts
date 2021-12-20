@@ -14,10 +14,11 @@ export interface CreateFormDTO {
   religion: string;
   levelOfEducation: string;
   job: string;
+  resourceCode: '' | TwoDigitCode | FourDigitCode | SixDigitCode | EightDigitCode;
 }
 
 export interface Form extends CreateFormDTO {
-  resourceCode: '' | TwoDigitCode | FourDigitCode | SixDigitCode | EightDigitCode;
+  status: 'PENDING' | 'DONE';
 }
 
 const formSchema = new mongoose.Schema<Form>(
@@ -33,6 +34,10 @@ const formSchema = new mongoose.Schema<Form>(
     levelOfEducation: String,
     job: String,
     resourceCode: String,
+    status: {
+      type: String,
+      default: 'PENDING',
+    },
   },
   {
     collection: 'forms',

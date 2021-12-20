@@ -1,7 +1,7 @@
 /* eslint-disable implicit-arrow-linebreak */
-import formModel, { Form } from '../models/form.model';
+import formModel, { CreateFormDTO, Form } from '../models/form.model';
 
-const insertForm = async (form: Form): Promise<Form> => {
+const insertForm = async (form: CreateFormDTO): Promise<Form> => {
   const doc = await formModel.create(form);
   return (await doc.save()).toObject();
 };
@@ -14,9 +14,16 @@ const getFormById = async (id: string) => formModel.findById(id).lean();
 
 const countFormsByFilters = async (pipe: object): Promise<number> => formModel.count(pipe);
 
+const updateFormById = async (id: string, updatingData: object): Promise<Form> =>
+  formModel.findByIdAndUpdate(id, updatingData, { returnOriginal: false }).lean();
+
+const deleteFormById = async (id: string) => formModel.findByIdAndDelete(id);
+
 export {
   insertForm,
   getFormsByCondition,
   getFormById,
   countFormsByFilters,
+  updateFormById,
+  deleteFormById,
 };
