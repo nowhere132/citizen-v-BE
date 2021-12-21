@@ -60,6 +60,7 @@ const apis: expressHandler[] = [
             ageFrom: i - 5,
             ageTo: i,
             numForms,
+            totalForms,
             percentage: totalForms ? numForms / totalForms : -1,
           };
           binResults.push(binRes);
