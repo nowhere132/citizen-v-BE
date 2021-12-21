@@ -12,7 +12,7 @@ const getFormsByCondition = async (pipe: object, limit: number, skip: number, so
 
 const getFormById = async (id: string) => formModel.findById(id).lean();
 
-const countFormsByFilters = async (pipe: object): Promise<number> => formModel.count(pipe);
+const countFormsByFilters = async (pipe: object): Promise<number> => formModel.countDocuments(pipe);
 
 const updateFormById = async (
   id: string,

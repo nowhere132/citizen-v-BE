@@ -7,6 +7,7 @@ import quarterApis from './quarter.api';
 import formApis from './form.api';
 import userApis from './user.api';
 import surveyProcessApis from './surveyProcess.api';
+import analyticApis from './analytic.api';
 import monitorApis from './monitorApi';
 import Logger from '../libs/logger';
 
@@ -34,6 +35,7 @@ const apis: expressHandler[] = [
   ...userApis,
   ...formApis,
   ...surveyProcessApis,
+  ...analyticApis,
   ...monitorApis,
 ];
 
