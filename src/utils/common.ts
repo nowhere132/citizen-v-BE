@@ -7,6 +7,12 @@ const randomInt = (leftBound: number, rightBound: number) =>
 const randomElemInArr = (arr: any[]) =>
   arr[randomInt(0, arr.length - 1)];
 
+const randomCitizenId = (): string => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const result = [...Array(10)].reduce((res: string, _) => res + randomInt(0, 9).toString(), '');
+  return result;
+};
+
 const randomDate = (from: Date, to: Date): Date => {
   const fromTime = from.getTime();
   const toTime = to.getTime();
@@ -34,6 +40,7 @@ const loopFixedTimesAsync = (num: number) => async (f: () => Promise<any>) => {
 
 export {
   randomInt,
+  randomCitizenId,
   randomElemInArr,
   randomDate,
   randomUuid,

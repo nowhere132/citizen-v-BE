@@ -1,6 +1,8 @@
 import quarterModel, { Quarter } from '../models/quarter.model';
 import { CreateFormDTO } from '../models/form.model';
-import { randomDate, randomElemInArr, randomInt } from '../utils/common';
+import {
+  randomCitizenId, randomDate, randomElemInArr, randomInt,
+} from '../utils/common';
 import * as formRepo from '../repositories/form.repo';
 import Logger from '../libs/logger';
 
@@ -56,13 +58,13 @@ const formGeneratingJob = async () => {
       'Lệ tổ',
     ];
 
-    const numLoops = 30;
+    const numLoops = 100;
     const randomQuarters = await quarterModel.aggregate<Quarter>([{ $sample: { size: numLoops } }]);
 
     const f = async (quarterIndex: number) => {
       const quarter = randomQuarters[quarterIndex];
       const citizen: CreateFormDTO = {
-        citizenId: `job-batch-${new Date().toISOString()}`,
+        citizenId: randomCitizenId(),
         fullname: `${randomElemInArr(randomLastnames)} ${randomElemInArr(randomFirstnames)}`,
         dob: randomDate(new Date('1930-01-01T00:00:00Z'), new Date()),
         gender: randomInt(0, 2) ? 'male' : 'female',
