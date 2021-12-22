@@ -295,6 +295,9 @@ const apis: expressHandler[] = [
 
         // STEP2: delete in DB
         const user: User = await userRepo.deleteUserById(userId);
+        if (!user) {
+          return defaultError(res, 'Tài khoản không tồn tại', langs.BAD_REQUEST, null, 400);
+        }
 
         return defaultResponse(res, '', langs.SUCCESS, user, 200);
       } catch (err) {
