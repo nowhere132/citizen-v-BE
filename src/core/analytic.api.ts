@@ -32,7 +32,7 @@ const apis: expressHandler[] = [
         const filter = req.query;
 
         const customedFilter = { ...filter };
-        const groupSearchFields = ['provinceCode', 'districtCode', 'wardCode', 'quarterCode'];
+        const groupSearchFields = ['resourceCode'];
         groupSearchFields.forEach((field) => {
           if (field in filter) {
             const orgArray: string[] = filter[field].toString().split(',');

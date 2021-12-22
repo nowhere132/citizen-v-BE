@@ -83,7 +83,7 @@ const apis: expressHandler[] = [
 
         // STEP2: custom filter
         const customedFilter = { ...filter };
-        const groupSearchFields = ['provinceCode', 'districtCode', 'wardCode', 'quarterCode'];
+        const groupSearchFields = ['resourceCode'];
         groupSearchFields.forEach((field) => {
           if (field in filter) {
             const orgArray: string[] = filter[field].toString().split(',');
