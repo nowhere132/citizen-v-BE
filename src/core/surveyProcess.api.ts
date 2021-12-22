@@ -141,7 +141,12 @@ const apis: expressHandler[] = [
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
 
-        const pipe = { resourceCode: req.params.code };
+        const resourceCode = req.params.code === 'vn' ? '' : req.params.code;
+        if (resourceCode.length % 2 > 0 || resourceCode.length > 8) {
+          return defaultError(res, 'Mã địa phương không phù hợp', langs.BAD_REQUEST, null, 400);
+        }
+
+        const pipe = { resourceCode };
         const surveyProcess = await surveyProcessRepo.getSurveyProcessByFilter(pipe);
 
         return defaultResponse(res, '', langs.SUCCESS, surveyProcess, 200);
