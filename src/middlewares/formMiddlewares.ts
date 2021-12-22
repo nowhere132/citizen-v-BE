@@ -25,13 +25,6 @@ const restrictFormByAccessToken = async (req: Request, res: Response, next: Next
       return defaultError(res, 'Tài khoản này không phải cấp B', langs.BAD_REQUEST, null, 400);
     }
 
-    if (req.method === 'GET') {
-      req.query.resourceCode = decodedToken.resourceCode;
-    }
-    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-      req.body.resourceCode = decodedToken.resourceCode;
-    }
-
     return next();
   } catch (err) {
     logger.error('restrictFormByAccessToken err:', err.message);
