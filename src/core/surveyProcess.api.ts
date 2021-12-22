@@ -41,6 +41,8 @@ const apis: expressHandler[] = [
         // STEP2: check all ancestors if existed
         const pipe = (resourceCode: string) => ({ resourceCode });
 
+        let minCreatedAt = new Date('2000-01-01T00:00:00Z');
+        let maxExpiresAt = new Date('2100-01-01T00:00:00Z');
         if (rawSurveyProcess.resourceCode !== '') {
           let ancestorCode = rawSurveyProcess.resourceCode.slice(
             0,
@@ -53,6 +55,8 @@ const apis: expressHandler[] = [
             if (!sP) {
               return defaultError(res, 'Cấp trên chưa khai báo thời gian khảo sát', langs.BAD_REQUEST, null, 400);
             }
+            minCreatedAt = sP.createdAt > minCreatedAt ? sP.createdAt : minCreatedAt;
+            maxExpiresAt = sP.expiresAt < maxExpiresAt ? sP.expiresAt : maxExpiresAt;
 
             if (ancestorCode.length) {
               ancestorCode = ancestorCode.slice(0, ancestorCode.length - 2);
@@ -60,6 +64,10 @@ const apis: expressHandler[] = [
               break;
             }
           }
+        }
+        if (rawSurveyProcess.createdAt < minCreatedAt
+            || rawSurveyProcess.expiresAt > maxExpiresAt) {
+          return defaultError(res, 'Không được khai báo ngoài khoảng cho phép', langs.BAD_REQUEST, null, 400);
         }
 
         // STEP3: insert to DB
