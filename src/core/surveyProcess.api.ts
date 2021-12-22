@@ -1,7 +1,7 @@
 import { updateStatus, updateTotalForms } from '../serviceAsync/surveyProcess';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
-import { CreateSurveyProcessDTO, SurveyProcess } from '../models/surveyProcess.model';
+import { CreateSurveyProcessDTO } from '../models/surveyProcess.model';
 import langs from '../constants/langs';
 import {
   defaultError,
@@ -38,10 +38,34 @@ const apis: expressHandler[] = [
         // STEP1: normalize req body
         const rawSurveyProcess: CreateSurveyProcessDTO = req.body;
 
-        // STEP2: insert to DB
-        const form: SurveyProcess = await surveyProcessRepo.insertSurveyProcess(rawSurveyProcess);
+        // STEP2: check all ancestors if existed
+        const pipe = (resourceCode: string) => ({ resourceCode });
 
-        return defaultResponse(res, '', langs.CREATED, form, 201);
+        if (rawSurveyProcess.resourceCode !== '') {
+          let ancestorCode = rawSurveyProcess.resourceCode.slice(
+            0,
+            rawSurveyProcess.resourceCode.length - 2,
+          );
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            // eslint-disable-next-line no-await-in-loop
+            const sP = await surveyProcessRepo.getSurveyProcessByFilter(pipe(ancestorCode));
+            if (!sP) {
+              return defaultError(res, 'Cấp trên chưa khai báo thời gian khảo sát', langs.BAD_REQUEST, null, 400);
+            }
+
+            if (ancestorCode.length) {
+              ancestorCode = ancestorCode.slice(0, ancestorCode.length - 2);
+            } else {
+              break;
+            }
+          }
+        }
+
+        // STEP3: insert to DB
+        const surveyProcess = await surveyProcessRepo.upsertSurveyProcess(rawSurveyProcess);
+
+        return defaultResponse(res, '', langs.CREATED, surveyProcess, 201);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
@@ -56,9 +80,8 @@ const apis: expressHandler[] = [
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
 
+        // STEP1: extract paging information
         const { page, perPage, ...filter } = req.query;
-
-        // STEP1: extract paging insurveyProcessations
         const actualPage = +(page || 1);
         const numOfRecords = +(perPage || 10);
         const skip: number = (actualPage - 1) * numOfRecords;
@@ -66,6 +89,14 @@ const apis: expressHandler[] = [
 
         // STEP2: custom filter
         const customedFilter = { ...filter };
+        const groupSearchFields = ['resourceCode'];
+        groupSearchFields.forEach((field) => {
+          if (field in filter) {
+            const orgArray: string[] = filter[field].toString().split(',');
+            const regexArray = orgArray.map((v) => new RegExp(`^${v}`));
+            (customedFilter as any).resourceCode = { $in: regexArray };
+          }
+        });
 
         const surveyProcessesPromise = surveyProcessRepo.getSurveyProcessesByCondition(
           customedFilter,
@@ -87,6 +118,25 @@ const apis: expressHandler[] = [
           surveyProcesss,
           200,
         );
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
+  // @done, GetSurveyProcessByResourceCode
+  {
+    path: '/survey-process/:code',
+    method: 'GET',
+    customMiddleWares: [verifyAccessToken],
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        const pipe = { resourceCode: req.params.code };
+        const surveyProcess = await surveyProcessRepo.getSurveyProcessByFilter(pipe);
+
+        return defaultResponse(res, '', langs.SUCCESS, surveyProcess, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);

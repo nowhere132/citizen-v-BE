@@ -12,8 +12,8 @@ const hasPermission = async (rCode: string): Promise<boolean> => {
   while (code.length > 0) {
     // eslint-disable-next-line no-await-in-loop
     const user = await userRepo.getUsersByFilter({ resourceCode: code });
-    if (user.permissions !== '1111') return false;
-    code = code.slice(0, -2);
+    if (!user || user.permissions !== '1111') return false;
+    code = code.slice(0, code.length - 2);
   }
   return true;
 };

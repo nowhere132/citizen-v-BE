@@ -4,9 +4,16 @@ import surveyProcessModel, {
   SurveyProcess,
 } from '../models/surveyProcess.model';
 
-const insertSurveyProcess = async (
+const upsertSurveyProcess = async (
   surveyProcess: CreateSurveyProcessDTO,
 ): Promise<SurveyProcess> => {
+  const pipe = { resourceCode: surveyProcess.resourceCode };
+
+  const oldSurveyProcess = await surveyProcessModel.findOne(pipe);
+  if (oldSurveyProcess) {
+    const doc = await surveyProcessModel.findOneAndUpdate(pipe, surveyProcess);
+    return doc;
+  }
   const rawDoc: SurveyProcess = {
     ...surveyProcess,
     totalForms: 0,
@@ -41,7 +48,7 @@ const updateSurveyProcessByFilter = async (
   surveyProcessModel.findOneAndUpdate(pipe, updatingData, opts);
 
 export {
-  insertSurveyProcess,
+  upsertSurveyProcess,
   getSurveyProcessesByCondition,
   getSurveyProcessByFilter,
   getSurveyProcessById,
