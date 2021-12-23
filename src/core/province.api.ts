@@ -32,6 +32,9 @@ const apis: expressHandler[] = [
         const province = await provinceRepo.insertProvince(rawProvince);
         return defaultResponse(res, '', langs.SUCCESS, province, 200);
       } catch (err) {
+        if (err.code === 11000) {
+          return defaultError(res, 'Mã này đã tồn tại', langs.BAD_REQUEST, null, 400);
+        }
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
       }
