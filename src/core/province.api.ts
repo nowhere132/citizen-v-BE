@@ -1,10 +1,42 @@
+import { isValidObjectId } from 'mongoose';
+import { verifyAccessToken } from '../middlewares/authenToken';
+import { validateTypes } from '../libs/defaultValidator';
 import langs from '../constants/langs';
-import { defaultError, expressHandler, pagingResponse } from '../interfaces/expressHandler';
+import {
+  defaultError, defaultResponse, expressHandler, pagingResponse,
+} from '../interfaces/expressHandler';
 import * as provinceRepo from '../repositories/province.repo';
+import { CreateProvinceDTO } from '../models/province.model';
 import Logger from '../libs/logger';
 
 const logger = Logger.create('province.ts');
 const apis: expressHandler[] = [
+  // @done AddProvince
+  {
+    params: {
+      $$strict: true,
+      code: 'string',
+      name: validateTypes.NAME,
+    },
+    path: '/province',
+    method: 'POST',
+    customMiddleWares: [verifyAccessToken],
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        // STEP1: normalize req body
+        const rawProvince: CreateProvinceDTO = req.body;
+
+        // STEP2: insert to DB
+        const province = await provinceRepo.insertProvince(rawProvince);
+        return defaultResponse(res, '', langs.SUCCESS, province, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
   // @done GetProvincesByCondition
   {
     params: {},
@@ -42,6 +74,37 @@ const apis: expressHandler[] = [
         const [provinces, total] = await Promise.all([provincesPromise, totalPromise]);
 
         return pagingResponse(res, actualPage, numOfRecords, total, '', langs.SUCCESS, provinces, 200);
+      } catch (err) {
+        logger.error(req.originalUrl, req.method, 'err:', err.message);
+        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
+      }
+    },
+  },
+  // @done Delete Provicne By Id
+  {
+    path: '/province/:id',
+    method: 'DELETE',
+    customMiddleWares: [verifyAccessToken],
+    action: async (req, res) => {
+      try {
+        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
+
+        const provinceId = req.params.id;
+        if (!isValidObjectId(provinceId)) {
+          return defaultError(res, 'id không phải object id', langs.BAD_REQUEST, null, 400);
+        }
+
+        const province = await provinceRepo.getProvinceById(provinceId);
+        if (!province) {
+          return defaultError(res, 'Tỉnh/TP không tồn tại', langs.BAD_REQUEST, null, 400);
+        }
+        if (!province.isFake) {
+          return defaultError(res, 'Dữ liệu thật, không được xóa', langs.BAD_REQUEST, null, 400);
+        }
+
+        await provinceRepo.deleteProvinceById(provinceId);
+
+        return defaultResponse(res, '', langs.SUCCESS, province, 200);
       } catch (err) {
         logger.error(req.originalUrl, req.method, 'err:', err.message);
         return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);

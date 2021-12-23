@@ -66,7 +66,7 @@ const validateUserRegister = async (req: Request, res: Response, next: NextFunct
 
     return next();
   } catch (err) {
-    logger.error('validateCodeAndLevel err:', err.message);
+    logger.error('validateUserRegister err:', err.message);
     return next();
   }
 };
@@ -94,7 +94,7 @@ const restrictByAccessToken = async (req: Request, res: Response, next: NextFunc
 
     return next();
   } catch (err) {
-    logger.error('validateCodeAndLevel err:', err.message);
+    logger.error('restrictByAccessToken err:', err.message);
     return next();
   }
 };
