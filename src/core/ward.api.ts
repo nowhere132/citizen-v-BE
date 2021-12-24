@@ -36,13 +36,7 @@ const apis: expressHandler[] = [
         // STEP2: check if parent resource was existed
         const district = await districtRepo.getDistrictByCode(rawWard.districtCode);
         if (!district) {
-          return defaultError(
-            res,
-            'Quận/huyện cấp cha không tồn tại',
-            langs.BAD_REQUEST,
-            null,
-            400,
-          );
+          return defaultError(res, 'Quận/huyện cấp cha không tồn tại', langs.BAD_REQUEST, null, 400);
         }
 
         // STEP3: insert to DB
@@ -116,7 +110,7 @@ const apis: expressHandler[] = [
 
         const ward = await wardRepo.getWardById(wardId);
         if (!ward) {
-          return defaultError(res, 'Quận/huyện không tồn tại', langs.BAD_REQUEST, null, 400);
+          return defaultError(res, 'Phường/xã không tồn tại', langs.BAD_REQUEST, null, 400);
         }
         if (!ward.isFake) {
           return defaultError(res, 'Dữ liệu thật, không được xóa', langs.BAD_REQUEST, null, 400);

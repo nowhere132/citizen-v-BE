@@ -3,7 +3,7 @@ import {
   TwoDigitCode, FourDigitCode, SixDigitCode, EightDigitCode,
 } from '../interfaces/common';
 
-export interface Quarter {
+export interface CreateQuarterDTO {
   code: EightDigitCode;
   name: string;
   wardCode: SixDigitCode;
@@ -12,6 +12,10 @@ export interface Quarter {
   districtName: string;
   provinceCode: TwoDigitCode;
   provinceName: string;
+}
+
+export interface Quarter extends CreateQuarterDTO {
+  isFake?: boolean;
 }
 
 const quarterSchema = new mongoose.Schema<Quarter>(
@@ -24,6 +28,7 @@ const quarterSchema = new mongoose.Schema<Quarter>(
     districtName: String,
     provinceCode: String,
     provinceName: String,
+    isFake: Boolean,
   },
   {
     collection: 'quarters',
