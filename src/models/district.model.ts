@@ -24,6 +24,8 @@ const districtSchema = new mongoose.Schema<District>(
     collection: 'districts',
   },
 );
+districtSchema.index({ code: 1 }, { unique: true });
+districtSchema.index({ provinceCode: 1, code: 1 }, { unique: true });
 
 const districtModel = mongoose.model('district', districtSchema);
 

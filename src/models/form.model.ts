@@ -40,6 +40,8 @@ const formSchema = new mongoose.Schema<Form>(
     collection: 'forms',
   },
 );
+formSchema.index({ resourceCode: 1 });
+formSchema.index({ status: 1 });
 
 const formModel = mongoose.model('form', formSchema);
 

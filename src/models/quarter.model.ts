@@ -34,6 +34,10 @@ const quarterSchema = new mongoose.Schema<Quarter>(
     collection: 'quarters',
   },
 );
+quarterSchema.index({ code: 1 }, { unique: true });
+quarterSchema.index({
+  provinceCode: 1, districtCode: 1, wardCode: 1, code: 1,
+}, { unique: true });
 
 const quarterModel = mongoose.model('quarter', quarterSchema);
 

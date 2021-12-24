@@ -19,6 +19,7 @@ const provinceSchema = new mongoose.Schema<Province>(
     collection: 'provinces',
   },
 );
+provinceSchema.index({ code: 1 }, { unique: true });
 
 const provinceModel = mongoose.model('province', provinceSchema);
 

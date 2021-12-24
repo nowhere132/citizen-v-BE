@@ -35,6 +35,8 @@ const wardSchema = new mongoose.Schema<Ward>(
     collection: 'wards',
   },
 );
+wardSchema.index({ code: 1 }, { unique: true });
+wardSchema.index({ provinceCode: 1, districtCode: 1, code: 1 }, { unique: true });
 
 const wardModel = mongoose.model('ward', wardSchema);
 

@@ -40,6 +40,8 @@ const userSchema = new mongoose.Schema<User>(
     collection: 'users',
   },
 );
+userSchema.index({ parentResourceCode: 1, resourceCode: 1 });
+userSchema.index({ username: 1 });
 
 const userModel = mongoose.model('user', userSchema);
 
