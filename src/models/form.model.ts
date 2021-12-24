@@ -34,10 +34,7 @@ const formSchema = new mongoose.Schema<Form>(
     levelOfEducation: String,
     job: String,
     resourceCode: String,
-    status: {
-      type: String,
-      default: 'PENDING',
-    },
+    status: String,
   },
   {
     collection: 'forms',

@@ -1,5 +1,6 @@
+import { updateDoneForms, updateTotalForms } from '../serviceAsync/surveyProcess';
 import quarterModel, { Quarter } from '../models/quarter.model';
-import { CreateFormDTO } from '../models/form.model';
+import { Form } from '../models/form.model';
 import {
   randomCitizenId, randomDate, randomElemInArr, randomInt,
 } from '../utils/common';
@@ -63,7 +64,7 @@ const formGeneratingJob = async () => {
 
     const f = async (quarterIndex: number) => {
       const quarter = randomQuarters[quarterIndex];
-      const citizen: CreateFormDTO = {
+      const form: Form = {
         citizenId: randomCitizenId(),
         fullname: `${randomElemInArr(randomLastnames)} ${randomElemInArr(randomFirstnames)}`,
         dob: randomDate(new Date('1930-01-01T00:00:00Z'), new Date()),
@@ -75,8 +76,13 @@ const formGeneratingJob = async () => {
         levelOfEducation: randomInt(0, 12).toString().padStart(2, '0'),
         job: randomElemInArr(randomJobs),
         resourceCode: quarter.code,
+        status: randomInt(0, 3) ? 'PENDING' : 'DONE',
       };
-      return formRepo.insertForm(citizen);
+      await formRepo.insertForm(form);
+
+      const promises = [updateTotalForms(form.resourceCode, 1)];
+      if (form.status === 'DONE') promises.push(updateDoneForms(form.resourceCode, 1));
+      await Promise.all(promises);
     };
 
     const promises = [...Array(numLoops)].map(async (_, i) => f(i));

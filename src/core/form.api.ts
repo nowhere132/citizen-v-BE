@@ -1,11 +1,12 @@
 import { isValidObjectId } from 'mongoose';
-import { updateDoneForms } from '../serviceAsync/surveyProcess';
+import { TokenData } from '../interfaces/token';
+import { updateDoneForms, updateTotalForms } from '../serviceAsync/surveyProcess';
 import { restrictByAccessToken } from '../middlewares/userMiddlewares';
 import { restrictFormByAccessToken, restrictFormByPermissions } from '../middlewares/formMiddlewares';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
 import langs from '../constants/langs';
-import { CreateFormDTO, Form } from '../models/form.model';
+import { Form } from '../models/form.model';
 import {
   defaultError,
   defaultResponse,
@@ -49,10 +50,18 @@ const apis: expressHandler[] = [
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
 
         // STEP1: normalize req body
-        const rawForm: CreateFormDTO = req.body as CreateFormDTO;
+        const decodedToken = (req as any).decodedToken as TokenData;
+        const rawForm: Form = {
+          ...req.body,
+          status: decodedToken.level === 4 ? 'DONE' : 'PENDING',
+        };
 
         // STEP2: insert to DB
         const form: Form = await formRepo.insertForm(rawForm);
+
+        // STEP3: create event
+        updateTotalForms(form.resourceCode, 1);
+        if (form.status === 'DONE') updateDoneForms(form.resourceCode, 1);
 
         return defaultResponse(res, '', langs.CREATED, form, 201);
       } catch (err) {
@@ -219,6 +228,10 @@ const apis: expressHandler[] = [
         if (!form) {
           return defaultError(res, 'Phiếu khảo sát không tồn tại', langs.BAD_REQUEST, null, 400);
         }
+
+        // STEP3: create event
+        updateTotalForms(form.resourceCode, -1);
+        if (form.status === 'DONE') updateDoneForms(form.resourceCode, -1);
 
         return defaultResponse(res, '', langs.SUCCESS, form, 200);
       } catch (err) {

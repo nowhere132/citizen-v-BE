@@ -1,7 +1,7 @@
 /* eslint-disable implicit-arrow-linebreak */
-import formModel, { CreateFormDTO, Form } from '../models/form.model';
+import formModel, { Form } from '../models/form.model';
 
-const insertForm = async (form: CreateFormDTO): Promise<Form> => {
+const insertForm = async (form: Form): Promise<Form> => {
   const doc = await formModel.create(form);
   return (await doc.save()).toObject();
 };

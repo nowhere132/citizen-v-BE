@@ -1,4 +1,4 @@
-import { updateStatus, updateTotalForms } from '../serviceAsync/surveyProcess';
+import { updateStatus } from '../serviceAsync/surveyProcess';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
 import { CreateSurveyProcessDTO } from '../models/surveyProcess.model';
@@ -187,46 +187,6 @@ const apis: expressHandler[] = [
         // STEP3: create event
         if (oldSurveyProcess.status !== status) {
           updateStatus(oldSurveyProcess.resourceCode, status);
-        }
-
-        return defaultResponse(res, '', langs.SUCCESS, surveyProcess, 200);
-      } catch (err) {
-        logger.error(req.originalUrl, req.method, 'err:', err.message);
-        return defaultError(res, '', langs.INTERNAL_SERVER_ERROR);
-      }
-    },
-  },
-  // @done, UpdateTotalForms (B2 only)
-  {
-    params: {
-      $$strict: true,
-      resourceCode: 'string|min:8|max:8',
-      totalForms: 'number|min:0',
-    },
-    path: '/survey-process/total-forms',
-    method: 'PATCH',
-    action: async (req, res) => {
-      try {
-        logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
-
-        // STEP1: normalize req body
-        const { resourceCode, totalForms } = req.body;
-
-        // STEP2: update to DB
-        const oldSurveyProcess = await surveyProcessRepo.getSurveyProcessByFilter({ resourceCode });
-        if (oldSurveyProcess.doneForms !== oldSurveyProcess.totalForms) {
-          return defaultError(res, 'Chưa hoàn thành tất cả phiếu khảo sát', langs.BAD_REQUEST, null, 400);
-        }
-
-        const surveyProcess = await surveyProcessRepo.updateSurveyProcessByFilter(
-          { resourceCode },
-          { totalForms },
-        );
-
-        // STEP3: create event
-        if (oldSurveyProcess.totalForms !== totalForms) {
-          const diff = totalForms - oldSurveyProcess.totalForms;
-          updateTotalForms(oldSurveyProcess.resourceCode, diff);
         }
 
         return defaultResponse(res, '', langs.SUCCESS, surveyProcess, 200);
