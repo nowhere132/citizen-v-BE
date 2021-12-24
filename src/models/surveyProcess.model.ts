@@ -28,7 +28,7 @@ const suveryProcessSchema = new mongoose.Schema<SurveyProcess>(
     collection: 'survey_processes',
   },
 );
-suveryProcessSchema.index({ resourceCode: 1 }, { unique: true });
+suveryProcessSchema.index({ resourceCode: 1 });
 
 const surveyProcessModel = mongoose.model('survey_process', suveryProcessSchema);
 

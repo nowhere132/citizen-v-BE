@@ -9,6 +9,7 @@ import Logger from '../libs/logger';
 
 const logger = Logger.create('resource-job.ts');
 
+// @done
 const formGeneratingJob = async () => {
   const nextTimeoutInMs = 3 * 1000;
   try {

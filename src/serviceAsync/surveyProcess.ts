@@ -6,31 +6,7 @@ const logger = Logger.create('surveyProcess-async.ts');
 
 const updateTotalForms = async (resourceCode: EightDigitCode, diff: number) => {
   try {
-    logger.info('----- updateTotalForms START -----');
-    const provinceCode = resourceCode.slice(0, 2);
-    const districtCode = resourceCode.slice(0, 4);
-    const wardCode = resourceCode.slice(0, 6);
-    const quarterCode = resourceCode;
-
-    const pipe = (x: string) => ({ resourceCode: x });
-    const updatingData = { $inc: { doneForms: diff } };
-
-    const promises = [
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData),
-    ];
-    await Promise.all(promises);
-    logger.info('----- updateTotalForms FINISH -----');
-  } catch (err) {
-    logger.error('updateTotalForms:', err.message);
-  }
-};
-
-const updateDoneForms = async (resourceCode: EightDigitCode, diff: number) => {
-  try {
-    logger.info('----- updateDoneForms START -----');
+    // logger.info('----- updateTotalForms START -----');
     const provinceCode = resourceCode.slice(0, 2);
     const districtCode = resourceCode.slice(0, 4);
     const wardCode = resourceCode.slice(0, 6);
@@ -38,15 +14,41 @@ const updateDoneForms = async (resourceCode: EightDigitCode, diff: number) => {
 
     const pipe = (x: string) => ({ resourceCode: x });
     const updatingData = { $inc: { totalForms: diff } };
+    const opts = { returnOriginal: false, upsert: true };
 
     const promises = [
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData, opts),
     ];
     await Promise.all(promises);
-    logger.info('----- updateDoneForms FINISH -----');
+    // logger.info('----- updateTotalForms FINISH -----');
+  } catch (err) {
+    logger.error('updateTotalForms:', err.message);
+  }
+};
+
+const updateDoneForms = async (resourceCode: EightDigitCode, diff: number) => {
+  try {
+    // logger.info('----- updateDoneForms START -----');
+    const provinceCode = resourceCode.slice(0, 2);
+    const districtCode = resourceCode.slice(0, 4);
+    const wardCode = resourceCode.slice(0, 6);
+    const quarterCode = resourceCode;
+
+    const pipe = (x: string) => ({ resourceCode: x });
+    const updatingData = { $inc: { doneForms: diff } };
+    const opts = { returnOriginal: false, upsert: true };
+
+    const promises = [
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData, opts),
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData, opts),
+    ];
+    await Promise.all(promises);
+    // logger.info('----- updateDoneForms FINISH -----');
   } catch (err) {
     logger.error('updateDoneForms:', err.message);
   }
