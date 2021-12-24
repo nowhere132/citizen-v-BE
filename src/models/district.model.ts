@@ -1,11 +1,15 @@
 import mongoose from 'mongoose';
 import { FourDigitCode, TwoDigitCode } from '../interfaces/common';
 
-export interface District {
+export interface CreateDistrictDTO {
   code: FourDigitCode;
   name: string;
   provinceCode: TwoDigitCode;
   provinceName: string;
+}
+
+export interface District extends CreateDistrictDTO {
+  isFake?: boolean;
 }
 
 const districtSchema = new mongoose.Schema<District>(
@@ -14,6 +18,7 @@ const districtSchema = new mongoose.Schema<District>(
     name: String,
     provinceCode: String,
     provinceName: String,
+    isFake: Boolean,
   },
   {
     collection: 'districts',
