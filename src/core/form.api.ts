@@ -2,7 +2,11 @@ import { isValidObjectId } from 'mongoose';
 import { TokenData } from '../interfaces/token';
 import { updateDoneForms, updateTotalForms } from '../serviceAsync/surveyProcess';
 import { restrictByAccessToken } from '../middlewares/userMiddlewares';
-import { restrictFormByAccessToken, restrictFormByPermissions } from '../middlewares/formMiddlewares';
+import {
+  restrictFormByAccessToken,
+  restrictFormByPermissions,
+  restrictFormBySurveyProcesses,
+} from '../middlewares/formMiddlewares';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { _enum } from '../utils/validatorUtils';
 import langs from '../constants/langs';
@@ -44,6 +48,7 @@ const apis: expressHandler[] = [
       verifyAccessToken,
       restrictFormByAccessToken,
       restrictFormByPermissions,
+      restrictFormBySurveyProcesses,
     ],
     action: async (req, res) => {
       try {
@@ -172,6 +177,7 @@ const apis: expressHandler[] = [
       verifyAccessToken,
       restrictFormByAccessToken,
       restrictFormByPermissions,
+      restrictFormBySurveyProcesses,
     ],
     action: async (req, res) => {
       try {
@@ -212,6 +218,7 @@ const apis: expressHandler[] = [
       verifyAccessToken,
       restrictByAccessToken,
       restrictFormByPermissions,
+      restrictFormBySurveyProcesses,
     ],
     action: async (req, res) => {
       try {
