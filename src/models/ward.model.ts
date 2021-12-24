@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { jobStatuses } from '../constants/configValues';
 import { FourDigitCode, SixDigitCode, TwoDigitCode } from '../interfaces/common';
 
-export interface Ward {
+export interface CreateWardDTO {
   _id?: mongoose.Types.ObjectId;
   code: SixDigitCode;
   name: string;
@@ -10,7 +10,10 @@ export interface Ward {
   districtName: string;
   provinceCode: TwoDigitCode;
   provinceName: string;
+}
 
+export interface Ward extends CreateWardDTO {
+  isFake?: boolean;
   jobId?: string;
   jobStatus?: keyof typeof jobStatuses;
 }
@@ -24,6 +27,7 @@ const wardSchema = new mongoose.Schema<Ward>(
     provinceCode: String,
     provinceName: String,
 
+    isFake: Boolean,
     jobId: String,
     jobStatus: String,
   },

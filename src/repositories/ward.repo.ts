@@ -1,6 +1,15 @@
 /* eslint-disable implicit-arrow-linebreak */
 import { SixDigitCode } from '../interfaces/common';
-import wardModel, { Ward } from '../models/ward.model';
+import wardModel, { CreateWardDTO, Ward } from '../models/ward.model';
+
+const insertWard = async (rawWard: CreateWardDTO): Promise<Ward> => {
+  const ward: Ward = {
+    ...rawWard,
+    isFake: true,
+  };
+  const doc = await wardModel.create(ward);
+  return (await doc.save()).toObject();
+};
 
 const getWardsByCondition = async (pipe: object, limit: number, skip: number, sort: object) =>
   wardModel.find(pipe).limit(limit).skip(skip).sort(sort)
@@ -22,7 +31,10 @@ const updateWardByFilter = async (pipe: object, updatingData: object) =>
 const updateWardById = async (id: string, updatingData: object) =>
   wardModel.findByIdAndUpdate(id, updatingData);
 
+const deleteWardById = async (id: string) => wardModel.findByIdAndDelete(id);
+
 export {
+  insertWard,
   getWardsByCondition,
   getWardByFilter,
   getWardById,
@@ -30,4 +42,5 @@ export {
   countWardsByFilters,
   updateWardByFilter,
   updateWardById,
+  deleteWardById,
 };
