@@ -60,7 +60,7 @@ const apis: expressHandler[] = [
     params: {},
     path: '/quarter',
     method: 'GET',
-    customMiddleWares: [verifyAccessToken],
+    // customMiddleWares: [verifyAccessToken],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
