@@ -1,4 +1,5 @@
 import { isValidObjectId } from 'mongoose';
+import { objectsEqual } from '../utils/common';
 import { CreateQuarterDTO } from '../models/quarter.model';
 import { verifyAccessToken } from '../middlewares/authenToken';
 import { validateTypes } from '../libs/defaultValidator';
@@ -20,6 +21,8 @@ const apis: expressHandler[] = [
       name: validateTypes.NAME,
       wardCode: 'string',
       wardName: validateTypes.NAME,
+      districtCode: 'string',
+      districtName: validateTypes.NAME,
       provinceCode: 'string',
       provinceName: validateTypes.NAME,
     },
@@ -35,7 +38,8 @@ const apis: expressHandler[] = [
 
         // STEP2: check if parent resource was existed
         const ward = await wardRepo.getWardByCode(rawQuarter.wardCode);
-        if (!ward) {
+        if (!ward || ward.name !== rawQuarter.wardName
+          || !objectsEqual(ward, rawQuarter)('provinceCode', 'provinceName', 'districtCode', 'districtName')) {
           return defaultError(res, 'Phường/xã cấp cha không tồn tại', langs.BAD_REQUEST, null, 400);
         }
 
@@ -56,6 +60,7 @@ const apis: expressHandler[] = [
     params: {},
     path: '/quarter',
     method: 'GET',
+    customMiddleWares: [verifyAccessToken],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);

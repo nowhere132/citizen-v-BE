@@ -33,7 +33,7 @@ const apis: expressHandler[] = [
 
         // STEP2: check if parent resource was existed
         const province = await provinceRepo.getProvinceByCode(rawDistrict.provinceCode);
-        if (!province) {
+        if (!province || province.name !== rawDistrict.provinceName) {
           return defaultError(res, 'Tỉnh/TP cấp cha không tồn tại', langs.BAD_REQUEST, null, 400);
         }
 
@@ -54,6 +54,7 @@ const apis: expressHandler[] = [
     params: {},
     path: '/district',
     method: 'GET',
+    customMiddleWares: [verifyAccessToken],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);

@@ -38,6 +38,15 @@ const loopFixedTimesAsync = (num: number) => async (f: () => Promise<any>) => {
   }
 };
 
+const objectsEqual = (...objs: object[]) => (...fields: string[]): boolean => {
+  if (objs.length === 0) return true;
+  const firstElem = objs[0];
+  // eslint-disable-next-line arrow-body-style
+  return objs.every((obj) => fields.every((field) => {
+    return (obj as any)[field] === (firstElem as any)[field];
+  }));
+};
+
 export {
   randomInt,
   randomCitizenId,
@@ -46,4 +55,5 @@ export {
   randomUuid,
   loopFixedTimes,
   loopFixedTimesAsync,
+  objectsEqual,
 };

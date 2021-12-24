@@ -45,6 +45,7 @@ const apis: expressHandler[] = [
     params: {},
     path: '/province',
     method: 'GET',
+    customMiddleWares: [verifyAccessToken],
     action: async (req, res) => {
       try {
         logger.info(req.originalUrl, req.method, req.params, req.query, req.body);
