@@ -177,6 +177,9 @@ const apis: expressHandler[] = [
 
         // STEP2: update to DB
         const oldSurveyProcess = await surveyProcessRepo.getSurveyProcessByFilter({ resourceCode });
+        if (!oldSurveyProcess) {
+          return defaultError(res, 'Tài khoản chưa mở đợt khai báo', langs.BAD_REQUEST, null, 400);
+        }
         if (oldSurveyProcess.doneForms !== oldSurveyProcess.totalForms) {
           return defaultError(res, 'Chưa hoàn thành tất cả phiếu khảo sát', langs.BAD_REQUEST, null, 400);
         }
