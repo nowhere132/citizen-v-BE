@@ -7,20 +7,28 @@ const logger = Logger.create('surveyProcess-async.ts');
 const updateTotalForms = async (resourceCode: EightDigitCode, diff: number) => {
   try {
     // logger.info('----- updateTotalForms START -----');
+    const countryCode = '';
     const provinceCode = resourceCode.slice(0, 2);
     const districtCode = resourceCode.slice(0, 4);
     const wardCode = resourceCode.slice(0, 6);
-    const quarterCode = resourceCode;
 
     const pipe = (x: string) => ({ resourceCode: x });
-    const updatingData = { $inc: { totalForms: diff } };
+    const updatingData = {
+      $inc: { totalForms: diff },
+      $setOnInsert: {
+        createdAt: new Date('2021-01-01T00:00:00Z'),
+        expiresAt: new Date('2021-12-31T00:00:00Z'),
+        doneForms: 0,
+        status: 'DOING',
+      },
+    };
     const opts = { returnOriginal: false, upsert: true };
 
     const promises = [
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(countryCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData, opts),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData, opts),
     ];
     await Promise.all(promises);
     // logger.info('----- updateTotalForms FINISH -----');
@@ -32,20 +40,26 @@ const updateTotalForms = async (resourceCode: EightDigitCode, diff: number) => {
 const updateDoneForms = async (resourceCode: EightDigitCode, diff: number) => {
   try {
     // logger.info('----- updateDoneForms START -----');
+    const countryCode = '';
     const provinceCode = resourceCode.slice(0, 2);
     const districtCode = resourceCode.slice(0, 4);
     const wardCode = resourceCode.slice(0, 6);
-    const quarterCode = resourceCode;
 
     const pipe = (x: string) => ({ resourceCode: x });
-    const updatingData = { $inc: { doneForms: diff } };
+    const updatingData = {
+      $inc: { doneForms: diff },
+      $setOnInsert: {
+        createdAt: new Date('2021-01-01T00:00:00Z'),
+        expiresAt: new Date('2021-12-31T00:00:00Z'),
+      },
+    };
     const opts = { returnOriginal: false, upsert: true };
 
     const promises = [
+      surveyProcessRepo.updateSurveyProcessByFilter(pipe(countryCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(provinceCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(districtCode), updatingData, opts),
       surveyProcessRepo.updateSurveyProcessByFilter(pipe(wardCode), updatingData, opts),
-      surveyProcessRepo.updateSurveyProcessByFilter(pipe(quarterCode), updatingData, opts),
     ];
     await Promise.all(promises);
     // logger.info('----- updateDoneForms FINISH -----');

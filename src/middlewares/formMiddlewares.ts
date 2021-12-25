@@ -45,13 +45,12 @@ const restrictFormByPermissions = async (req: Request, res: Response, next: Next
 const restrictFormBySurveyProcesses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const decodedToken = (req as any).decodedToken as TokenData;
-    let code = decodedToken.resourceCode;
-    while (code.length > 0) {
+    let code = decodedToken.resourceCode.slice(0, decodedToken.resourceCode.length - 2);
+    while (code.length >= 0) {
       // eslint-disable-next-line no-await-in-loop
       const sP = await surveyProcessRepo.getSurveyProcessByFilter({ resourceCode: code });
       if (!sP) {
-        const target = code === decodedToken.resourceCode ? 'Tài khoản này' : 'Cấp trên';
-        return defaultError(res, `${target} chưa mở đợt khai báo`, langs.BAD_REQUEST, null, 400);
+        return defaultError(res, 'Cấp trên chưa mở đợt khai báo', langs.BAD_REQUEST, null, 400);
       }
 
       const currentDate = new Date();
@@ -65,6 +64,7 @@ const restrictFormBySurveyProcesses = async (req: Request, res: Response, next: 
         );
       }
 
+      if (code.length === 0) break;
       code = code.slice(0, code.length - 2);
     }
 

@@ -81,9 +81,10 @@ const formGeneratingJob = async () => {
       };
       await formRepo.insertForm(form);
 
-      const promises = [updateTotalForms(form.resourceCode, 1)];
-      if (form.status === 'DONE') promises.push(updateDoneForms(form.resourceCode, 1));
-      await Promise.all(promises);
+      await updateTotalForms(form.resourceCode, 1);
+      if (form.status === 'DONE') {
+        await updateDoneForms(form.resourceCode, 1);
+      }
     };
 
     const promises = [...Array(numLoops)].map(async (_, i) => f(i));

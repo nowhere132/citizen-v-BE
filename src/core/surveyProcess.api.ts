@@ -146,7 +146,9 @@ const apis: expressHandler[] = [
           return defaultError(res, 'Mã địa phương không phù hợp', langs.BAD_REQUEST, null, 400);
         }
 
-        const pipe = { resourceCode };
+        const pipe = resourceCode.length < 8
+          ? { resourceCode }
+          : { resourceCode: resourceCode.slice(0, 6) };
         const surveyProcess = await surveyProcessRepo.getSurveyProcessByFilter(pipe);
 
         return defaultResponse(res, '', langs.SUCCESS, surveyProcess, 200);
