@@ -45,23 +45,27 @@ const restrictFormByPermissions = async (req: Request, res: Response, next: Next
 const restrictFormBySurveyProcesses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const decodedToken = (req as any).decodedToken as TokenData;
-    let code = decodedToken.resourceCode.slice(0, decodedToken.resourceCode.length - 2);
+    let code = decodedToken.resourceCode;
     while (code.length >= 0) {
+      if (code.length === 8) {
+        code = code.slice(0, 6);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
       // eslint-disable-next-line no-await-in-loop
       const sP = await surveyProcessRepo.getSurveyProcessByFilter({ resourceCode: code });
       if (!sP) {
         return defaultError(res, 'Cấp trên chưa mở đợt khai báo', langs.BAD_REQUEST, null, 400);
       }
+      if (sP.status === 'DONE' && req.method !== 'GET') {
+        const errorMsg = 'Không được chỉnh sửa dữ liệu với phường xã đã hoàn thành khai báo';
+        return defaultError(res, errorMsg, langs.BAD_REQUEST, null, 400);
+      }
 
       const currentDate = new Date();
       if (sP.createdAt > currentDate || sP.expiresAt < currentDate) {
-        return defaultError(
-          res,
-          'Ngoài khoảng thời gian được phép khai báo',
-          langs.BAD_REQUEST,
-          null,
-          400,
-        );
+        const errorMsg = 'Ngoài khoảng thời gian được phép khai báo';
+        return defaultError(res, errorMsg, langs.BAD_REQUEST, null, 400);
       }
 
       if (code.length === 0) break;
