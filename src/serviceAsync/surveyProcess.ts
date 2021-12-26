@@ -86,9 +86,11 @@ const updateStatus = async (resourceCode: SixDigitCode, status: 'DOING' | 'DONE'
     } else {
       const districtCnt = await surveyProcessRepo.countSurveyProcesssByFilters({
         resourceCode: { $regex: `^${districtCode}[0-9]{2}$` },
+        status: 'DOING',
       });
       const provinceCnt = await surveyProcessRepo.countSurveyProcesssByFilters({
         resourceCode: { $regex: `^${provinceCode}[0-9]{2}$` },
+        status: 'DOING',
       });
 
       const promises = [];
